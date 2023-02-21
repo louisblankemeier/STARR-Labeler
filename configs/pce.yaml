@@ -1,0 +1,165 @@
+# hypothesize that we haven't saturized performance with trivial feature engineering using EHR. This is less exciting but I think if the goal is to be most useful': None, ' this is very important. 
+# this is for generating features for input': None, ' labeling': None, ' visualizing': None, ' and creating group based / stratified splits. modular where can use various dates of interest
+# maximium code sharing between different types of EHR and also different diseases. Really tried to simplify so that the code is readable and create a nice API. where people only need to interact with the config file basically to generate all these functions.
+
+# future work: interested in doing both detection and prediction in the same network. I think there's value in just looking through the large amount of patient data quickly and identifiying issues. In this vein there's other diesease such as abdominal aortic anyurisms that I'm 
+
+FEATURES:
+  PATH: /bmrNAS/scandata/abct_ehr/clinical_data/
+  SAVE_DIR: /dataNAS/people/lblankem/opportunistic_ct/libraries/stanford_extract/stanford_extract/checkpoints/
+  NUM_PATIENTS: 23547
+  DATES: 'CT'
+  LAG_AFTER_DATES: 14
+  TYPES:
+    DEMOGRAPHICS: 
+      FILE_NAME: "demographics.csv"
+      INCLUDE: {'Gender': None, 'Race': None, 'Ethnicity': None, 'Date of Birth': None} # Date of Birth here gets converted to age.
+      BINS: 1
+      BIN_DURATION: 1 #in years
+      AGGREGATE: 'mean'
+      FILL_NA: 'median'
+      USE: True
+      USE_TRUNCATED: True
+      SAVE_TRUNCATED: False
+      SAVE: True
+      LOAD: False
+    VITALS: 
+      FILE_NAME: "flowsheets.csv"
+      TYPE: 'Measure'
+      #INCLUDE: {'DBP': None, ' SBP': None, ' BP': None, ' Pulse': None, ' Temp': None, ' Weight': None, ' SpO2': None, ' Resp': None, ' Mean Arterial Pressure (Calculated)': None, ' BSA (Calculated - sq m)': None, ' Height': None, ' Fall Within Last 6 Months': None}
+      #For PCE:
+      INCLUDE: {'SBP': None}
+      BINS: 1
+      BIN_DURATION: 1 #in years
+      #AGGREGATE: 'mean'
+      AGGREGATE: 'pce'
+      FILL_NA: 'median'
+      USE: True
+      USE_TRUNCATED: True
+      SAVE_TRUNCATED: False
+      SAVE: True
+      LOAD: False
+    LABS: 
+      FILE_NAME: "labs.csv"
+      TYPE: 'Result'
+      #INCLUDE: {'HDL Cholesterol': None, ' Cholesterol, Total': None, ' Creatinine': None, ' Ser/Plas': None, ' Potassium': None, ' Ser/Plas': None, ' Hematocrit': None, ' Hemoglobin': None, ' Glucose': None, ' Ser/Plas': None, ' WBC': None, ' RBC': None, ' Calcium': None, ' Ser/Plas': None, ' MCHC': None, ' RDW': None, ' MCV': None, ' MCH': None, ' Platelet count': None, ' CO2': None, ' Ser/Plas': None, ' Sodium': None, ' Ser/Plas': None, ' Chloride': None, ' Ser/Plas': None, ' Anion Gap': None, ' Albumin': None, ' Ser/Plas': None, ' ALT (SGPT)': None, ' Ser/Plas': None, ' AST (SGOT)': None, ' Ser/Plas'': None, ' "Alk P'TASE': None, ' Total': None, ' Ser/Plas"': None, ' 'Protein': None, ' Total': None, ' Ser/Plas': None, ' Globulin': None, ' RBC': None, ' urine': None, ' WBC': None, ' urine': None, ' BUN': None, ' Ser/Plas': None, ' eGFR Refit Without Race (2021)': None, ' Total Bilirubin': None, ' Ser/Plas': None, ' Lymphocyte': None, ' Absolute': None, ' Lymphocyte %': None, ' Monocyte': None, ' Absolute': None, ' Basophil %': None, ' Basophil': None, ' Absolute': None, ' Monocyte %': None, ' Eosinophil': None, ' Absolute': None, ' Eosinophil %': None, ' Neutrophil': None, ' Absolute': None, ' Neutrophil %': None, ' Heart Rate': None, ' QT Interval': None, ' QRSD Interval': None, ' QRS Axis': None, ' ECG Impression': None, ' RR': None, ' QTC Interval': None, ' T Wave Axis': None, ' P-R Interval': None, ' P Axis': None, ' Total Bilirubin': None, ' Hemoglobin A1c': None}
+      #For PCE:
+      INCLUDE: {'^HDL Cholesterol': 'HDL Cholesterol', 'Cholesterol, Total': 'Cholesterol, Total'}
+      BINS: 1
+      BIN_DURATION: 1 #in years
+      #AGGREGATE: 'mean'
+      AGGREGATE: 'pce'
+      FILL_NA: 'median'
+      USE: True
+      USE_TRUNCATED: True
+      SAVE_TRUNCATED: False
+      SAVE: True
+      LOAD: False
+    DIAGNOSES:
+      FILE_NAME: "diagnoses.csv"
+      TYPE: 'ICD10 Code'
+      #For PCE:
+      INCLUDE: {'F17.210': None, 'Z72.0': None, 'E08': None, 'E09': None, 'E10': None, 'E11': None, 'E13'}
+      NUM_ICD_CHARS: 3
+      BINS: 1
+      BIN_DURATION: 1 #in years
+      AGGREGATE: 'mean'
+      FILL_NA: '0'
+      USE: True
+      USE_TRUNCATED: True
+      SAVE_TRUNCATED: False
+      SAVE: True
+      LOAD: False
+    PROCEDURES:
+      FILE_NAME: "procedures.csv"
+      TYPE: 'Code'
+      BINS: 1
+      BIN_DURATION: 1 #in years
+      AGGREGATE: 'sum'
+      FILL_NA: '0'
+      USE: False
+      USE_TRUNCATED: True
+      SAVE_TRUNCATED: False
+      SAVE: True
+      LOAD: False
+    MED_ORDERS:
+      FILE_NAME: "med_orders.csv"
+      TYPE: 'Therapeutic Class'
+      #For CPE
+      INCLUDE: {'blood pressure': None}
+      BINS: 1
+      BIN_DURATION: 1
+      AGGREGATE: 'mean'
+      FILL_NA: '0'
+      USE: True
+      USE_TRUNCATED: True
+      SAVE_TRUNCATED: False
+      SAVE: True
+      LOAD: False
+    MED_ADMIN:
+      FILE_NAME: "med_admin.csv"
+      BINS: 1
+      BIN_DURATION: 1
+      AGGREGATE: 'sum'
+      USE: False
+      USE_TRUNCATED: True
+      SAVE_TRUNCATED: False
+      SAVE: True
+      LOAD: False
+    RADIOLOGY_REPORT_META:
+      FILE_NAME: "radiology_report_meta.csv"
+      BINS: 1
+      BIN_DURATION: 1
+      AGGREGATE: 'mean'
+      USE: False
+      USE_TRUNCATED: True
+      SAVE_TRUNCATED: False
+      SAVE: True
+      LOAD: True
+    CLINICAL_NOTE_META:
+      FILE_NAME: "clinical_note_meta.csv"
+      BINS: 1
+      BIN_DURATION: 1
+      AGGREGATE: 'sum'
+      USE: False
+      USE_TRUNCATED: True
+      SAVE_TRUNCATED: False
+      SAVE: True
+      LOAD: True
+    ENCOUNTERS:
+      FILE_NAME: "encounters.csv"
+      BINS: 1
+      BIN_DURATION: 1
+      AGGREGATE: 'mean'
+      USE: False
+      USE_TRUNCATED: True
+      SAVE_TRUNCATED: False
+      SAVE: True
+      LOAD: True
+  
+LABELS:
+  SPLITS: 5
+  HYPERTENSION:
+    ICD: {'I10': None, ' I11': None, ' I12': None, ' I13': None, ' I14': None, ' I15': None, ' I16'}
+    LABS: {}
+    VITALS: {'SBP': None, ' DBP': None}
+  DIABETES:
+    ICD: {'E10': None, ' E11': None, ' E12': None, ' E13': None, ' E14': None, ' E15'}
+    LABS: {'Glucose': None, ' hba1c': None}
+    VITALS: {}
+  CHRONIC_KIDNEY_DISEASE:
+    ICD: {'N18': None, ' I12': None, ' I13': None, ' E08.22': None, ' E09.22': None, ' E10.22': None, ' E11.22': None, ' E13.22': None}
+    LABS: {'albuminuria': None, ' eGFR': None}
+    VITALS: {}
+  ISCHEMIC_HEART_DISEASE:
+    ICD: {'I20': None, ' I21': None, ' I22': None, ' I23': None, ' I24': None, ' I25': None}
+    LABS: {}
+    VITALS: {}
+  OSTEOPOROSIS:
+    ICD: {'M80': None, ' M81': None, ' M83': None, ' Z87.310': None, ' M89.7': None, ' S12': None, ' S22': None, ' S32': None, ' S42': None, ' S52': None, ' S62': None, ' S72': None}
+    LABS: {}
+    VITALS: {}
+
+
+
+
