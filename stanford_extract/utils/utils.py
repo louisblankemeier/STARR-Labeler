@@ -142,3 +142,16 @@ class one_patient_iterator():
         to_return = self.curr_data_chunk.loc[self.curr_data_chunk['Patient Id'] == pt_id]
         self.patient_idx += 1
         return to_return
+
+def get_splits(splits, labels):
+    labels = labels.reset_index(drop=True)
+    X = labels['Label']
+    y = labels['Label']
+    groups = labels['Patient Id']
+    group_kfold = GroupKFold(n_splits = splits)
+    group_kfold.get_n_splits(X, y, groups)
+    split_idx = 0
+    for _, test_index in group_kfold.split(X, y, groups):
+        labels.loc[test_index, 'Split'] = split_idx
+        split_idx += 1
+    return labels

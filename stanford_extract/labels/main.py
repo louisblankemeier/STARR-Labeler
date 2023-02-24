@@ -6,13 +6,11 @@ import hydra
 from ruamel.yaml import YAML
 from typing import List, Dict, Tuple, NamedTuple, Optional
 
-from stanford_extract.labels.generate_labels import generate_labels
+from stanford_extract.labels.label_generator import label_generator
 
 @hydra.main(version_base=None, config_path="disease_configs/", config_name = 'cvd.yaml')
 def main(cfg):
-    output_dir = Path(__file__).parent / "results"
-    labels_class = label_generator(cfg, output_dir)
+    labels_class = label_generator(cfg)
     labels_class.compute_diagnosis_dates()
     labels_class.compute_diagnosis_labels()
-
 main()

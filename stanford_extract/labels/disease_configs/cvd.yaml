@@ -1,4 +1,7 @@
-Disease Name: CVD
+disease_name: CVD
+days_after: 1825
+days_before: 0
+consider_only_first_diagnosis: True
 
 ICD10:
   Hierarchical: False
@@ -206,7 +209,7 @@ ICD10:
     - Z98.62
     
 FEATURES:
-  PATH: /bmrNAS/scandata/abct_ehr/clinical_data/truncated_v1/
+  PATH: /bmrNAS/scandata/abct_ehr/clinical_data/
   NUM_PATIENTS: 23547
   DATES: 'CT'
   TYPES:

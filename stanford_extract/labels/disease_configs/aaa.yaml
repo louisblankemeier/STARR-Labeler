@@ -1,4 +1,7 @@
-Disease Name: AAA
+disease_name: AAA
+days_before: 60
+days_after: 60
+consider_only_first_diagnosis: False
 
 ICD10:
   Hierarchical: False
@@ -18,7 +21,8 @@ ICD9:
     - 441.4
     
 FEATURES:
-  PATH: /bmrNAS/scandata/abct_ehr/clinical_data/truncated_v1/
+  # PATH: /bmrNAS/scandata/abct_ehr/clinical_data/truncated_v1/
+  PATH: /bmrNAS/scandata/abct_ehr/clinical_data/
   NUM_PATIENTS: 23547
   DATES: 'CT'
   TYPES:
@@ -37,7 +41,7 @@ FEATURES:
     DIAGNOSES:
       USE: True
       FILE_NAME: "diagnoses.csv"
-      USE_COLS: ['Patient Id', 'Date', 'ICD10 Code']
+      USE_COLS: ['Patient Id', 'Date', 'ICD10 Code', 'ICD9 Code']
     PROCEDURES:
       USE: True
       FILE_NAME: "procedures.csv"
