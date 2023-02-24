@@ -1,0 +1,337 @@
+TRUNCATE:
+  PATH: /bmrNAS/scandata/abct_ehr/clinical_data/
+  SAVE_DIR: /dataNAS/people/lblankem/opportunistic_ct/libraries/stanford_extract/stanford_extract/truncated/
+  NUM_PATIENTS: 25000
+  DATES: CT
+  TYPES:
+    DEMOGRAPHICS:
+      USE: false
+      FILE_NAME: demographics.csv
+      USE_COLS:
+      - Patient Id
+      - Gender
+      - Race
+      - Ethnicity
+      - Date of Birth
+    VITALS:
+      USE: true
+      FILE_NAME: flowsheets.csv
+      USE_COLS:
+      - Patient Id
+      - Measure
+      - Value
+      - Date
+    LABS:
+      USE: false
+      FILE_NAME: labs.csv
+      USE_COLS:
+      - Patient Id
+      - Value
+      - Taken Date
+      - Result
+      - Reference High
+      - Reference Low
+      - Units
+    DIAGNOSES:
+      USE: false
+      FILE_NAME: diagnoses.csv
+      USE_COLS:
+      - Patient Id
+      - Date
+      - ICD10 Code
+    PROCEDURES:
+      USE: false
+      FILE_NAME: procedures.csv
+      USE_COLS:
+      - Patient Id
+      - Code Type
+      - Code
+      - Date
+    MED_ORDERS:
+      USE: false
+      FILE_NAME: med_orders.csv
+    MED_ADMIN:
+      USE: false
+      FILE_NAME: med_admin.csv
+    RADIOLOGY_REPORT_META:
+      USE: false
+      FILE_NAME: radiology_report_meta.csv
+    CLINICAL_NOTE_META:
+      USE: false
+      FILE_NAME: clinical_note_meta.csv
+    ENCOUNTERS:
+      USE: false
+      FILE_NAME: encounters.csv
+FEATURES:
+  PATH: /bmrNAS/scandata/abct_ehr/clinical_data/truncated_v1/
+  SAVE_DIR: /dataNAS/people/lblankem/opportunistic_ct/libraries/stanford_extract/stanford_extract/truncated/checkpoints
+  NUM_PATIENTS: 23547
+  DATES: CT
+  LAG_AFTER_DATES: 14
+  TYPES:
+    DEMOGRAPHICS:
+      USE: true
+      FILE_NAME: demographics.csv
+      USE_COLS:
+      - Patient Id
+      - Gender
+      - Race
+      - Ethnicity
+      - Date of Birth
+      INCLUDE:
+        Gender: None
+        Race: None
+        Ethnicity: None
+        Date of Birth: None
+      BINS: 1
+      BIN_DURATION: 1
+      AGGREGATE: mean
+      FILL_NA: median
+      SAVE: true
+      LOAD: true
+    VITALS:
+      USE: true
+      FILE_NAME: flowsheets.csv
+      USE_COLS:
+      - Patient Id
+      - Measure
+      - Value
+      - Date
+      TYPE: Measure
+      VALUE: Value
+      INCLUDE:
+        DBP: None
+        SBP: None
+        BP: None
+        Pulse: None
+        Temp: None
+        ' Weight': None
+        SpO2: None
+        Resp: None
+        Mean Arterial Pressure \(Calculated\): None
+        BSA \(Calculated - sq m\): None
+        ' Height': None
+        ' Fall Within Last 6 Months': None
+      BINS: 1
+      BIN_DURATION: 1
+      AGGREGATE: mean
+      FILL_NA: median
+      SAVE: true
+      LOAD: true
+    LABS:
+      USE: true
+      FILE_NAME: labs.csv
+      USE_COLS:
+      - Patient Id
+      - Value
+      - Taken Date
+      - Result
+      - Reference High
+      - Reference Low
+      - Units
+      TYPE: Result
+      Value: Value
+      INCLUDE:
+        ^HDL Cholesterol: HDL Cholesterol
+        Cholesterol, Total: Cholesterol, Total
+        Creatinine, Ser/Plas: None
+        Potassium, Ser/Plas: None
+        Hematocrit: None
+        Hemoglobin: None
+        Glucose, Ser/Plas: None
+        WBC: None
+        RBC: None
+        Calcium, Ser/Plas: None
+        MCHC: None
+        RDW: None
+        MCV: None
+        MCH: None
+        Platelet count: None
+        CO2, Ser/Plas: None
+        Sodium, Ser/Plas: None
+        Chloride, Ser/Plas: None
+        Anion Gap: None
+        Albumin, Ser/Plas: None
+        ALT \(SGPT\), Ser/Plas: None
+        AST \(SGOT\), Ser/Plas: None
+        Alk P: None
+        Protein, Total, Ser/Plas: None
+        Globulin: None
+        RBC, urine: None
+        WBC, urine: None
+        BUN, Ser/Plas: None
+        eGFR Refit Without Race \(2021\): None
+        Total Bilirubin, Ser/Plas: None
+        Lymphocyte, Absolute: None
+        Lymphocyte %: None
+        Monocyte, Absolute: None
+        Basophil %: None
+        Basophil, Absolute: None
+        Monocyte %: None
+        Eosinophil, Absolute: None
+        Eosinophil %: None
+        Neutrophil, Absolute: None
+        Neutrophil %: None
+        Heart Rate: None
+        QT Interval: None
+        QRSD Interval: None
+        QRS Axis: None
+        ECG Impression: None
+        RR: None
+        QTC Interval: None
+        T Wave Axis: None
+        P-R Interval: None
+        P Axis: None
+        Total Bilirubin: None
+        Hemoglobin A1c: None
+      BINS: 1
+      BIN_DURATION: 1
+      AGGREGATE: mean
+      FILL_NA: median
+      SAVE: true
+      LOAD: true
+    DIAGNOSES:
+      USE: true
+      FILE_NAME: diagnoses.csv
+      USE_COLS:
+      - Patient Id
+      - Date
+      - ICD10 Code
+      TYPE: ICD10 Code
+      NUM_ICD_CHARS: 3
+      BINS: 1
+      BIN_DURATION: 1
+      AGGREGATE: sum
+      FILL_NA: '0'
+      SAVE: true
+      LOAD: true
+    PROCEDURES:
+      USE: true
+      FILE_NAME: procedures.csv
+      USE_COLS:
+      - Patient Id
+      - Code Type
+      - Code
+      - Date
+      TYPE: Code
+      BINS: 1
+      BIN_DURATION: 1
+      AGGREGATE: sum
+      FILL_NA: '0'
+      SAVE: true
+      LOAD: false
+    MED_ORDERS:
+      USE: true
+      FILE_NAME: med_orders.csv
+      USE_COLS:
+      - Patient Id
+      - Therapeutic Class
+      - Sig
+      - Start Date
+      TYPE: Therapeutic Class
+      BINS: 1
+      BIN_DURATION: 1
+      AGGREGATE: mean
+      FILL_NA: '0'
+      SAVE: true
+      LOAD: false
+    MED_ADMIN:
+      USE: false
+      FILE_NAME: med_admin.csv
+      BINS: 1
+      BIN_DURATION: 1
+      AGGREGATE: sum
+      SAVE: true
+      LOAD: false
+    RADIOLOGY_REPORT_META:
+      USE: false
+      FILE_NAME: radiology_report_meta.csv
+      BINS: 1
+      BIN_DURATION: 1
+      AGGREGATE: mean
+      SAVE: true
+      LOAD: true
+    CLINICAL_NOTE_META:
+      USE: false
+      FILE_NAME: clinical_note_meta.csv
+      BINS: 1
+      BIN_DURATION: 1
+      AGGREGATE: sum
+      SAVE: true
+      LOAD: true
+    ENCOUNTERS:
+      USE: false
+      FILE_NAME: encounters.csv
+      BINS: 1
+      BIN_DURATION: 1
+      AGGREGATE: mean
+      SAVE: true
+      LOAD: true
+VISUALIZING: null
+LABELS:
+  SPLITS: 5
+  HYPERTENSION:
+    ICD:
+      I10: None
+      ' I11': None
+      ' I12': None
+      ' I13': None
+      ' I14': None
+      ' I15': None
+      ' I16': null
+    LABS: {}
+    VITALS:
+      SBP: None
+      ' DBP': None
+  DIABETES:
+    ICD:
+      E10: None
+      ' E11': None
+      ' E12': None
+      ' E13': None
+      ' E14': None
+      ' E15': null
+    LABS:
+      Glucose: None
+      ' hba1c': None
+    VITALS: {}
+  CHRONIC_KIDNEY_DISEASE:
+    ICD:
+      N18: None
+      ' I12': None
+      ' I13': None
+      ' E08.22': None
+      ' E09.22': None
+      ' E10.22': None
+      ' E11.22': None
+      ' E13.22': None
+    LABS:
+      albuminuria: None
+      ' eGFR': None
+    VITALS: {}
+  ISCHEMIC_HEART_DISEASE:
+    ICD:
+      I20: None
+      ' I21': None
+      ' I22': None
+      ' I23': None
+      ' I24': None
+      ' I25': None
+    LABS: {}
+    VITALS: {}
+  OSTEOPOROSIS:
+    ICD:
+      M80: None
+      ' M81': None
+      ' M83': None
+      ' Z87.310': None
+      ' M89.7': None
+      ' S12': None
+      ' S22': None
+      ' S32': None
+      ' S42': None
+      ' S52': None
+      ' S62': None
+      ' S72': None
+    LABS: {}
+    VITALS: {}
