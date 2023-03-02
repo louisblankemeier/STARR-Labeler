@@ -6,6 +6,7 @@ from sklearn.model_selection import GroupKFold
 import datetime
 from pathlib import Path
 from typing import Dict
+import sys
 
 from stanford_extract.utils import *
 
@@ -88,7 +89,7 @@ class label_generator():
             merged = merged.loc[pos_icd10 | pos_icd9]
         else:
             merged = merged.loc[pos_icd10]
-        merged = merged[["Patient Id", "Accession Number", "Date", "Imaging_dt"]]
+        merged = merged[["Patient Id", "Accession Number", "Date", "Imaging_dt", "Text", "Filename"]]
         return merged
 
     def encounter_dates(self):
@@ -118,9 +119,11 @@ class label_generator():
         """
 
         imaging_df = self.imaging_dates(self.cfg['FEATURES']['DATES'])
-        all_mrn_accession = imaging_df[["Patient Id", "Accession Number", "Imaging_dt"]]
+        all_mrn_accession = imaging_df[["Patient Id", "Accession Number", "Imaging_dt", "Filename", "Text"]]
         encounters_data = self.encounter_dates()
         mrn_accession = all_mrn_accession.merge(encounters_data, how = 'left', on = ['Patient Id'])
+        # drop Filename and Text from mrn_accession
+        mrn_accession = mrn_accession[["Patient Id", "Accession Number", "Imaging_dt", "First Encounter Date", "Last Encounter Date"]]
 
         types_array = []
         
@@ -147,9 +150,9 @@ class label_generator():
                     t.update(num_patients_processed)
                 outputs = pd.concat(results)
                 outputs = outputs.groupby(["Patient Id", "Accession Number"]).head(1)
-                outputs = outputs[["Patient Id", "Accession Number", "Date"]]
+                outputs = outputs[["Patient Id", "Accession Number", "Date", "Text", "Filename"]]
                 # Rename to Patient Id, Accession Number and Diagnosis Date
-                outputs.columns = ["Patient Id", "Accession Number", "Diagnosis Date"]
+                outputs.columns = ["Patient Id", "Accession Number", "Diagnosis Date", "Text", "Filename"]
                 types_array.append(outputs)
 
         final_positive_array = pd.concat(types_array)
@@ -198,6 +201,12 @@ class label_generator():
         self.diagnosis_dates.loc[twos, 'Label'] = 2
         self.diagnosis_dates.loc[threes, 'Label'] = 3
 
+        # save a file with just 1s for label and include Text
+        positive_cases = self.diagnosis_dates.loc[self.diagnosis_dates['Label'] == 1]
+        positive_cases = positive_cases[["Filename", "Imaging Date", "Diagnosis Date", "Text"]]
+        positive_cases.to_csv(self.output_folder / "positive_cases.csv", index = False)
+
+
         self.diagnosis_dates = self.diagnosis_dates[["Patient Id", "Accession Number", "Label"]]
 
         splits = None
@@ -218,6 +227,14 @@ class label_generator():
     def imaging_dates(self, dates):
         """Get imaging dates.
         """
+
+        radiology_report_iterator = data_iterator(self.features_path, 'radiology_report.csv', None, 10000)
+        radiology_report_dataframes = []
+        for radiology_report in radiology_report_iterator:
+            radiology_report_dataframes.append(radiology_report)
+        radiology_report_df = pd.concat(radiology_report_dataframes)
+        radiology_report_df = radiology_report_df[['Accession Number', 'Text']]
+
         imaging_iterator = data_iterator(self.features_path, 'radiology_report_meta.csv', None, 10000)
 
         imaging_dataframes = []
@@ -228,10 +245,14 @@ class label_generator():
         imaging_df.loc[:, 'Imaging_dt'] = pd.to_datetime(imaging_df['Date'], utc=True)
         imaging_df = imaging_df[['Patient Id', 'Accession Number', 'Imaging_dt']]
         imaging_df = imaging_df.groupby(['Patient Id', 'Accession Number']).head(1)
-        cross_walk_data = pd.DataFrame(pd.read_csv(os.path.join(str(Path(self.cfg['FEATURES']['PATH']).parent), 'priority_crosswalk_all.csv'))['accession'])
-        cross_walk_data.columns = ['Accession Number']
+        cross_walk_data = pd.DataFrame(pd.read_csv(os.path.join(str(Path(self.cfg['FEATURES']['PATH']).parent), 'priority_crosswalk_all.csv')))
+        cross_walk_data = cross_walk_data[['accession', 'filename']]
+        cross_walk_data.columns = ['Accession Number', 'Filename']
         cross_walk_data['Accession Number'] = cross_walk_data['Accession Number'].astype(str)
+        cross_walk_data['Filename'] = cross_walk_data['Filename'].astype(str)
         imaging_df = cross_walk_data.merge(imaging_df, how = 'inner', on = ['Accession Number'])
+
+        imaging_df = imaging_df.merge(radiology_report_df, how = 'inner', on = ['Accession Number'])
         return imaging_df
 
     
