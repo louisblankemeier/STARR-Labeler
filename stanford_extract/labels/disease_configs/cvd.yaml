@@ -3,6 +3,24 @@ days_after: 1825
 days_before: 0
 consider_only_first_diagnosis: True
 
+HyDE:
+  FILTER_REGEX: "NSTEMI|(myocardial ischemia)|(ischemic heart disease)|(cardiac ischemia)|(myocardial infarction)|(myocardial necrosis)|(coronary heart disease)|(coronary artery disease)|(heart attack)"
+  MASK_REPLACEMENT_REGEX: "^NSTEMI$|^myocardial_ischemia|^ischemic_heart_disease|^cardiac_ischemia|^myocardial_infarction|^myocardial_necrosis|^coronary_heart_disease|^coronary_artery_disease|^heart_attack"
+  
+  CLINICAL_NOTES_PATH: "/bmrNAS/scandata/abct_ehr/clinical_data/"
+  OUTPUT_DIR: "/dataNAS/people/lblankem/stanford_extract/stanford_extract/labels/results/CVD"
+  OUTPUT_FILE_NAME: "mcms"
+
+  NOTE_TYPES: ["Other Note", "Progress Note", "Inpatient", "ED Note", "Consultation Note", "Progress/Discharge/Transfer Summary", \
+              "Letter", "Other", "Nursing Sign Out Note", "History and Physical", "Progress Note", "Outpatient", "IP Consult", \
+              "Discharge/Transfer Summary"]
+
+  BEFORE_TERMS: ["occlusive", "obstructive", "1 vessel", "transplant", "non-q wave", "ST elevation", "3-vessel", "non-ST elevated", "non-ST elevation", "type II", "preclinical", "anterior", "acute", "inferior", "chronic", "postoperative", "multivessel"]
+  AFTER_TERMS: ["; chronic", "ischemic heart disease", "status"]
+
+  CONTEXT_SIMILARITY_CHARS: 20
+
+
 ICD10:
   Hierarchical: False
   Codes:
