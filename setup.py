@@ -7,7 +7,7 @@ description='Transform raw electronic health records data into features and labe
 packages=find_packages(),
 install_requires=[
         'pandas',
-        'hydra-core'
+        'hydra-core',
         'torch',
         'transformers',
         'numpy',
