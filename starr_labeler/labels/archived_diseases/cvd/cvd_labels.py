@@ -6,7 +6,7 @@ import hydra
 from ruamel.yaml import YAML
 from typing import List, Dict, Tuple, NamedTuple, Optional
 
-from stanford_extract.labels.extract_labels import *
+from starr_labeler.labels.extract_labels import *
 
 yaml_dict: Dict = YAML().load(open("config.yaml", "r"))
 icd_codes = yaml_dict['ICD10']
@@ -23,7 +23,7 @@ class cvd_labels(labels_base):
         merged = merged[["Patient Id", "Accession Number", "Date", "Imaging_dt"]]
         return merged
 
-@hydra.main(version_base=None, config_path="/dataNAS/people/lblankem/opportunistic_ct/libraries/stanford_extract/configs", config_name = 'xgboost.yaml')
+@hydra.main(version_base=None, config_path="/dataNAS/people/lblankem/opportunistic_ct/libraries/starr_labeler/configs", config_name = 'xgboost.yaml')
 def main(cfg):
     cvd_class = cvd_labels(cfg, 'labels_cvd.csv')
     cvd_class.compute_labels()

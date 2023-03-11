@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Dict
 import sys
 
-from stanford_extract.utils import *
+from starr_labeler.utils import *
 
 pd.options.mode.chained_assignment = None
 

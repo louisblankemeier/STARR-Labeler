@@ -3,7 +3,7 @@ from pathlib import Path
 import sys
 import numpy as np
 
-from stanford_extract.features.extract_features import extract_base
+from starr_labeler.features.extract_features import extract_base
 
 class extract_med_admin(extract_base):
     def __init__(self, config, file_name, feature_type, save_truncated):

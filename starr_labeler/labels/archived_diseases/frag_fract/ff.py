@@ -3,7 +3,7 @@ import sys
 from glob import glob
 import os
 
-from stanford_extract.labels.extract_labels import *
+from starr_labeler.labels.extract_labels import *
 
 global code
 

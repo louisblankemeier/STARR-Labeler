@@ -238,7 +238,7 @@ class mcm_generator():
         if not os.path.exists(os.path.join(self.hyde_cfg.OUTPUT_DIR, self.hyde_cfg.OUTPUT_FILE_NAME + ".csv")):
             self.generate_mcm_dataframe()
 
-        model_path = '/dataNAS/people/lblankem/stanford_extract/stanford_extract/labels/models/rs_c2_c3_a1_a2_a3_a4_bst.pt'
+        model_path = '/dataNAS/people/lblankem/starr_labeler/starr_labeler/labels/models/rs_c2_c3_a1_a2_a3_a4_bst.pt'
         dataset_path = os.path.join(self.hyde_cfg.OUTPUT_DIR, self.hyde_cfg.OUTPUT_FILE_NAME + ".csv")
         output_path = os.path.join(self.hyde_cfg.OUTPUT_DIR, self.hyde_cfg.OUTPUT_FILE_NAME + "_predictions.csv")
         inference = Inference(model_path, dataset_path, output_path)

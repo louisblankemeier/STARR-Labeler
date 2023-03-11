@@ -2,7 +2,7 @@ import pandas as pd
 from pathlib import Path
 import sys
 
-from stanford_extract.features.extract_features import extract_base
+from starr_labeler.features.extract_features import extract_base
 
 class extract_diagnoses(extract_base):
     def __init__(self, config, file_name, feature_type, save_truncated):

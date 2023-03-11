@@ -4,7 +4,7 @@ from glob import glob
 import os
 import hydra
 
-from stanford_extract.labels.extract_labels import *
+from starr_labeler.labels.extract_labels import *
 
 class ihd_labels(labels_base):
     def __init__(self, config, save_name):
