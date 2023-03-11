@@ -1,3 +1,5 @@
+############### Adapted from Isabel Gallegos's Imaging Biomarkers Repository. ###############
+
 import pandas as pd
 from pathlib import Path
 import sys

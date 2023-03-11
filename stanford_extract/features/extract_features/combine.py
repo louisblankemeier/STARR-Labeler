@@ -5,16 +5,16 @@ import re
 from pathlib import Path
 from stanford_extract.utils import merge_dfms
 
-from stanford_extract.features.demographics import extract_demographics
-from stanford_extract.features.diagnoses import extract_diagnoses
-from stanford_extract.features.labs import extract_labs
-from stanford_extract.features.vitals import extract_vitals
-from stanford_extract.features.procedures import extract_procedures
-from stanford_extract.features.med_orders import extract_med_orders
-from stanford_extract.features.med_admin import extract_med_admin
-from stanford_extract.features.encounters import extract_encounters
-from stanford_extract.features.clinical_note_meta import extract_clinical_note_meta
-from stanford_extract.features.radiology_report_meta import extract_radiology_report_meta
+from stanford_extract.features.ehr_types.demographics import extract_demographics
+from stanford_extract.features.ehr_types.diagnoses import extract_diagnoses
+from stanford_extract.features.ehr_types.labs import extract_labs
+from stanford_extract.features.ehr_types.vitals import extract_vitals
+from stanford_extract.features.ehr_types.procedures import extract_procedures
+from stanford_extract.features.ehr_types.med_orders import extract_med_orders
+from stanford_extract.features.ehr_types.med_admin import extract_med_admin
+from stanford_extract.features.ehr_types.encounters import extract_encounters
+from stanford_extract.features.ehr_types.clinical_note_meta import extract_clinical_note_meta
+from stanford_extract.features.ehr_types.radiology_report_meta import extract_radiology_report_meta
 
 def process_all_types(cfg, save_truncated):
 
