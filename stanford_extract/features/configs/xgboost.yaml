@@ -1,9 +1,3 @@
-# hypothesize that we haven't saturized performance with trivial feature engineering using EHR. This is less exciting but I think if the goal is to be most useful': None, ' this is very important. 
-# this is for generating features for input': None, ' labeling': None, ' visualizing': None, ' and creating group based / stratified splits. modular where can use various dates of interest
-# maximium code sharing between different types of EHR and also different diseases. Really tried to simplify so that the code is readable and create a nice API. where people only need to interact with the config file basically to generate all these functions.
-
-# future work: interested in doing both detection and prediction in the same network. I think there's value in just looking through the large amount of patient data quickly and identifiying issues. In this vein there's other diesease such as abdominal aortic anyurisms that I'm 
-
 TRUNCATE:
   PATH: /bmrNAS/scandata/abct_ehr/clinical_data/
   SAVE_DIR: /dataNAS/people/lblankem/opportunistic_ct/libraries/stanford_extract/stanford_extract/truncated/
