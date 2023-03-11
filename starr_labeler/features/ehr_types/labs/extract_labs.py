@@ -15,11 +15,11 @@ class extract_labs(extract_base):
         if 'Hemoglobin A1c' in labs_regex:
             pat_data = pat_data.replace('Hb A1c Diabetic Assessment', 'Hemoglobin A1c')
 
-        pat_data = pat_data.loc[pat_data['Result'].str.contains(labs_regex, regex = True, case = False, na = False)]
+        pat_data = pat_data.loc[pat_data['Result'].str.fullmatch(labs_regex, case = False, na = False)]
 
         for key, value in self.cfg['FEATURES']['TYPES']['LABS']['INCLUDE'].items():
             if value != "None":
-                pat_data.loc[pat_data['Result'].str.contains(key, regex = True, case = False, na = False), 'Result'] = value
+                pat_data.loc[pat_data['Result'].str.fullmatch(key, case = False, na = False), 'Result'] = value
 
         pat_data.loc[:, 'Value'] = pd.to_numeric(pat_data.loc[:, 'Value'], 'coerce')
         pat_data.loc[:, 'Reference High'] = pd.to_numeric(pat_data.loc[:, 'Reference High'], 'coerce')

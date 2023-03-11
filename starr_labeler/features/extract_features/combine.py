@@ -26,9 +26,11 @@ def process_all_types(cfg, save_truncated):
     features = []
     for feature_type in list(cfg_section['TYPES'].keys()):
         if cfg_section['TYPES'][feature_type]['USE']:
+            print("")
+            print("Now processing feature type: " + feature_type)
             if (not save_truncated) and (cfg_section['TYPES'][feature_type]['LOAD']):
-                print(f"Loading features from {os.path.join(cfg_section['SAVE_DIR'], cfg_section['TYPES'][feature_type]['FILE_NAME'])}.")
-                extracted_features = pd.read_csv(os.path.join(cfg_section['SAVE_DIR'], cfg_section['TYPES'][feature_type]['FILE_NAME']))
+                print(f"Loading features from {os.path.join(cfg_section['PATH'], cfg_section['TYPES'][feature_type]['FILE_NAME'])}.")
+                extracted_features = pd.read_csv(os.path.join(cfg_section['PATH'], cfg_section['TYPES'][feature_type]['FILE_NAME']))
             else:
                 extract_class = getattr(sys.modules[__name__], f"extract_{feature_type.lower()}")
                 extract_instance = extract_class(cfg, cfg_section['TYPES'][feature_type]['FILE_NAME'], feature_type, save_truncated)

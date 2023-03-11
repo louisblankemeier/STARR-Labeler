@@ -112,6 +112,8 @@ class extract_base:
             else:
                 pat_data = self.process_data(pat_data)
                 merged = pat_data.merge(imaging_df, on = 'Patient Id')
+                if merged.empty:
+                    continue
 
                 if 'Type' not in merged.columns:
                     lab_features.append(merged)

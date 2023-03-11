@@ -49,7 +49,7 @@ FEATURES:
   LAG_AFTER_DATES: 14
   TYPES:
     DEMOGRAPHICS: 
-      USE: True
+      USE: False
       FILE_NAME: "demographics.csv"
       USE_COLS: ['Patient Id', 'Gender', 'Race', 'Ethnicity', 'Date of Birth']
       INCLUDE: {'Gender': None, 'Race': None, 'Ethnicity': None, 'Date of Birth': None} # Date of Birth here gets converted to age.
@@ -60,7 +60,7 @@ FEATURES:
       SAVE: True
       LOAD: False # whether to load from 
     VITALS: 
-      USE: True
+      USE: False
       FILE_NAME: "flowsheets.csv"
       USE_COLS: ['Patient Id', 'Measure', 'Value', 'Date']
       TYPE: 'Measure'
@@ -73,7 +73,7 @@ FEATURES:
       SAVE: True
       LOAD: False
     LABS: 
-      USE: True
+      USE: False
       FILE_NAME: "labs.csv"
       USE_COLS: ['Patient Id', 'Value', 'Taken Date', 'Result', 'Reference High', 'Reference Low', 'Units']
       TYPE: 'Result'
@@ -91,6 +91,7 @@ FEATURES:
       USE_COLS: ['Patient Id', 'Date', 'ICD10 Code']
       TYPE: 'ICD10 Code'
       NUM_ICD_CHARS: 3
+      INCLUDE: {"E08": None, "E09": None, "E10": None, "E11": None, "E13": None}
       BINS: 1
       BIN_DURATION: 1
       AGGREGATE: 'sum'

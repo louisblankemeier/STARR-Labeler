@@ -10,7 +10,7 @@ sys.path.insert(0, str(path.parent.absolute()))
 
 from extract_features.combine import compute_features, truncate
 
-@hydra.main(version_base=None, config_path="configs/", config_name = 'xgboost.yaml')
+@hydra.main(version_base=None, config_path="configs/", config_name = 'safe.yaml')
 def main(cfg):
     #truncate(cfg)
     compute_features(cfg)

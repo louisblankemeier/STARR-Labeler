@@ -3,7 +3,6 @@ import sys
 from glob import glob
 import os
 import hydra
-from ruamel.yaml import YAML
 from typing import List, Dict, Tuple, NamedTuple, Optional
 
 from starr_labeler.labels.label_generator import label_generator

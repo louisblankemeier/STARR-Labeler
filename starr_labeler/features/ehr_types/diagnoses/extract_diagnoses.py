@@ -15,12 +15,16 @@ class extract_diagnoses(extract_base):
 
         if 'INCLUDE' in self.cfg['FEATURES']['TYPES']['DIAGNOSES']:
             diagnoses_regex = "|".join(list(self.cfg['FEATURES']['TYPES']['DIAGNOSES']['INCLUDE'].keys()))
-            pat_data = pat_data.loc[pat_data[diagnoses_type].str.contains(diagnoses_regex, regex = True, case = False, na = False)]
+            pat_data = pat_data.loc[pat_data[diagnoses_type].str.match(diagnoses_regex, case = False, na = False)]
         
         pat_data = pat_data.loc[~pd.isna(pat_data.loc[:, diagnoses_type])]
         pat_data.loc[:, diagnoses_type] = pat_data.loc[:, diagnoses_type].map(lambda x: "".join(x.split('.', 1)).strip()[0:self.cfg['FEATURES']['TYPES']['DIAGNOSES']['NUM_ICD_CHARS']])
         pat_data = pat_data[['Patient Id', diagnoses_type, 'Date']]
-        pat_data.loc[:, 'Value'] = 1
+        
+        if not pat_data.empty:
+            pat_data.loc[:, 'Value'] = 1
+        else:
+            pat_data = pd.DataFrame(columns=['Patient Id', diagnoses_type, 'Date', 'Value'])
         pat_data = pat_data[['Patient Id', diagnoses_type, 'Value', 'Date']]
         pat_data.columns = ['Patient Id', 'Type', 'Value', 'Event_dt']
         return pat_data

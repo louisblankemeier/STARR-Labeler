@@ -14,12 +14,9 @@ from torch.utils.data import DataLoader
 import torch
 import random
 import numpy as np
-from sklearn.utils import shuffle
 import matplotlib.pyplot as plt
 import re
-from negspacy import termsets
 import hydra
-from omegaconf import DictConfig
 import logging
 
 from hyde_inference import Inference

@@ -11,7 +11,7 @@ class extract_vitals(extract_base):
 
     def process_data(self, pat_data):
         vitals_regex = "|".join(list(self.cfg['FEATURES']['TYPES']['VITALS']['INCLUDE'].keys()))
-        pat_data = pat_data[pat_data['Measure'].str.contains(vitals_regex, regex = True, case = False, na = False)]
+        pat_data = pat_data[pat_data['Measure'].str.fullmatch(vitals_regex, case = False, na = False)]
         pat_data = pat_data[['Patient Id', 'Measure', 'Value', 'Date']]
         pat_data.columns = ['Patient Id', 'Type', 'Value', 'Event_dt']
         
