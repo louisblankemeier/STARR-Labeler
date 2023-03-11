@@ -29,3 +29,6 @@ To run with slurm, edit the command in starr_labeler/labels/slurm.py. Then, run:
 ```
 python slurm.py
 ```
+
+## Citation
+Please cite this work if you use it for your research.
