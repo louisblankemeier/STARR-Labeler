@@ -9,7 +9,6 @@ sys.path.insert(0, str(path.parent.parent.absolute()))
 sys.path.insert(0, str(path.parent.absolute()))
 
 from combine import compute_features, truncate
-from utils import get_parser, setup_cfg
 
 @hydra.main(version_base=None, config_path="/dataNAS/people/lblankem/opportunistic_ct/libraries/stanford_extract/configs", config_name = 'xgboost.yaml')
 def main(cfg):

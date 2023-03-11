@@ -136,30 +136,3 @@ FEATURES:
       SAVE_TRUNCATED: False
       SAVE: True
       LOAD: True
-  
-LABELS:
-  SPLITS: 5
-  HYPERTENSION:
-    ICD: {'I10': None, ' I11': None, ' I12': None, ' I13': None, ' I14': None, ' I15': None, ' I16'}
-    LABS: {}
-    VITALS: {'SBP': None, ' DBP': None}
-  DIABETES:
-    ICD: {'E10': None, ' E11': None, ' E12': None, ' E13': None, ' E14': None, ' E15'}
-    LABS: {'Glucose': None, ' hba1c': None}
-    VITALS: {}
-  CHRONIC_KIDNEY_DISEASE:
-    ICD: {'N18': None, ' I12': None, ' I13': None, ' E08.22': None, ' E09.22': None, ' E10.22': None, ' E11.22': None, ' E13.22': None}
-    LABS: {'albuminuria': None, ' eGFR': None}
-    VITALS: {}
-  ISCHEMIC_HEART_DISEASE:
-    ICD: {'I20': None, ' I21': None, ' I22': None, ' I23': None, ' I24': None, ' I25': None}
-    LABS: {}
-    VITALS: {}
-  OSTEOPOROSIS:
-    ICD: {'M80': None, ' M81': None, ' M83': None, ' Z87.310': None, ' M89.7': None, ' S12': None, ' S22': None, ' S32': None, ' S42': None, ' S52': None, ' S62': None, ' S72': None}
-    LABS: {}
-    VITALS: {}
-
-
-
-

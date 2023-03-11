@@ -1,6 +1,8 @@
-#from python_submit import python_submit
-#python_submit("python3 main.py", ngpus=0)
+from python_submit import python_submit
 
+python_submit("python main.py")
+
+'''
 import os
 
 def python_submit(command, node = None):
@@ -14,4 +16,5 @@ def python_submit(command, node = None):
     os.remove("./slurm.sh")
 
 python_submit("python main.py")
+'''
 

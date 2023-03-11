@@ -4,8 +4,8 @@ days_before: 0
 consider_only_first_diagnosis: True
 
 HyDE:
-  FILTER_REGEX: "NSTEMI|(myocardial ischemia)|(ischemic heart disease)|(cardiac ischemia)|(myocardial infarction)|(myocardial necrosis)|(coronary heart disease)|(coronary artery disease)|(heart attack)"
-  MASK_REPLACEMENT_REGEX: "^NSTEMI$|^myocardial_ischemia|^ischemic_heart_disease|^cardiac_ischemia|^myocardial_infarction|^myocardial_necrosis|^coronary_heart_disease|^coronary_artery_disease|^heart_attack"
+  FILTER_REGEX: NSTEMI|(myocardial ischemia)|(ischemic heart disease)|(cardiac ischemia)|(myocardial infarction)|(myocardial necrosis)|(coronary heart disease)|(coronary artery disease)|(heart attack)|(stroke)|(CAD)|(STEMI)|(cerebrovascular disease)|(peripheral artery disease)|(stroke)|(agina)|(CVD)"
+  MASK_REPLACEMENT_REGEX: "^NSTEMI$|^myocardial_ischemia|^ischemic_heart_disease|^cardiac_ischemia|^myocardial_infarction|^myocardial_necrosis|^coronary_heart_disease|^coronary_artery_disease|^heart_attack|^stroke|^CAD$|^STEMI$|cerebrovascular_disease|peripheral_artery_disease|stroke|^agina|^CVD$"
   
   CLINICAL_NOTES_PATH: "/bmrNAS/scandata/abct_ehr/clinical_data/"
   OUTPUT_DIR: "/dataNAS/people/lblankem/stanford_extract/stanford_extract/labels/results/CVD"

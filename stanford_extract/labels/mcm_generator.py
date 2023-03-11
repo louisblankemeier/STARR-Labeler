@@ -22,6 +22,7 @@ import hydra
 from omegaconf import DictConfig
 import logging
 
+from hyde_inference import Inference
 
 class mcm_generator():
     def __init__(self, config):
@@ -145,7 +146,7 @@ class mcm_generator():
                 # log iteration for process
                 logging.info(f"Iteration {i} for process {os.getpid()}")
                 sys.stdout.flush()
-            note = str(clinical_notes.iloc[i, 9])
+            note = str(clinical_notes.iloc[i, 4])
             note = re.sub(sort_string, lambda x: x.group().replace(" ", "_"), note)
             split_notes = np.array(note.split()) 
             positive_idx = [i for i, item in enumerate(split_notes) if re.search(mask_replacement_regex, item, re.IGNORECASE)]
@@ -186,8 +187,8 @@ class mcm_generator():
                 note_dict = {}
                 note_dict['Patient Id'] = str(clinical_notes.iloc[i, 0])
                 note_dict['Date'] = clinical_notes.iloc[i, 1]
-                note_dict['Type'] = clinical_notes.iloc[i, 3]
-                note_dict['Title'] = clinical_notes.iloc[i, 5]
+                note_dict['Type'] = clinical_notes.iloc[i, 2]
+                note_dict['Title'] = clinical_notes.iloc[i, 3]
                 left_context = " ".join(left_context)
                 note_dict['Left Context'] = left_context
                 note_dict['Mention'] = mention
@@ -212,7 +213,7 @@ class mcm_generator():
         local = []
         for mention in data['mentions']:
             inputs.append(mention['Left Context'] + " [MASK] " + mention['Right Context'])
-            local.append(mention['Left Context'][-1 * int(self.hyde_cfg.CONTEXT_SIMILARITY_CHARS):-1] + " " + mention['Right Context'][0:int(self.cfg.CONTEXT_SIMILARITY_CHARS)])
+            local.append(mention['Left Context'][-1 * int(self.hyde_cfg.CONTEXT_SIMILARITY_CHARS):-1] + " " + mention['Right Context'][0:int(self.hyde_cfg.CONTEXT_SIMILARITY_CHARS)])
             labels.append(mention['Label'])
             patient_ids.append(mention['Patient Id'])
             dates.append(mention['Date'])
@@ -227,4 +228,20 @@ class mcm_generator():
         logging.info(f"Number of mentions in dataframe after dropping local duplicates: {len(dataframe)}")
 
         dataframe.to_csv(os.path.join(self.hyde_cfg.OUTPUT_DIR, self.hyde_cfg.OUTPUT_FILE_NAME + ".csv"), index = False)
+
+    def run_hyde(self):
+        """Run hyde
+        """
+        if not os.path.exists(os.path.join(self.hyde_cfg.OUTPUT_DIR, self.hyde_cfg.OUTPUT_FILE_NAME + ".json")):
+            self.generate_mcm_json()
+
+        if not os.path.exists(os.path.join(self.hyde_cfg.OUTPUT_DIR, self.hyde_cfg.OUTPUT_FILE_NAME + ".csv")):
+            self.generate_mcm_dataframe()
+
+        model_path = '/dataNAS/people/lblankem/stanford_extract/stanford_extract/labels/models/rs_c2_c3_a1_a2_a3_a4_bst.pt'
+        dataset_path = os.path.join(self.hyde_cfg.OUTPUT_DIR, self.hyde_cfg.OUTPUT_FILE_NAME + ".csv")
+        output_path = os.path.join(self.hyde_cfg.OUTPUT_DIR, self.hyde_cfg.OUTPUT_FILE_NAME + "_predictions.csv")
+        inference = Inference(model_path, dataset_path, output_path)
+        inference()
+
         

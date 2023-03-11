@@ -18,4 +18,6 @@ def main(cfg):
     '''
     mcm_class = mcm_generator(cfg)
     mcm_class.generate_mcm_json()
+    mcm_class.generate_mcm_dataframe()
+    mcm_class.run_hyde()
 main()
