@@ -14,7 +14,6 @@ pd.options.mode.chained_assignment = None
 
 class label_generator():
     """Class for generating labels for the given disease.
-
     Attributes:
         cfg (Dict): Dictionary containing the configuration parameters.
         icd10_codes_regex (str): Regex for the ICD10 codes.
@@ -37,23 +36,13 @@ class label_generator():
 
     def __init__(self, config):
         """Initialize the label generator.
-
         Args:
             config (Dict): Dictionary containing the configuration parameters.
             output_folder (Path): Path to the output folder.
         """
         self.cfg: Dict = config
-        self.disease_name = self.cfg['disease_name']
         self.icd10_codes_regex: str = '|'.join(self.cfg['ICD10']['Codes'])
         self.hierarchical_icd10: bool = self.cfg['ICD10']['Hierarchical']
-
-        if self.disease_name == "AAA":
-            self.icd10_repair_codes_regex: str = '|'.join([str(code) for code in self.cfg['ICD10_repair']['Codes']])
-            print(self.icd10_repair_codes_regex)
-            self.hierarchical_icd10_repair: bool = self.cfg['ICD10_repair']['Hierarchical']
-            self.icd9_repair_codes_regex: str = '|'.join([str(code) for code in self.cfg['ICD9_repair']['Codes']])
-            print(self.icd9_repair_codes_regex)
-            self.hierarchical_icd9_repair: bool = self.cfg['ICD9_repair']['Hierarchical']
 
         if 'ICD9' in self.cfg:
             icd9_list = self.cfg['ICD9']['Codes']
@@ -63,6 +52,7 @@ class label_generator():
 
         self.output_folder: Path = Path(__file__).parent / "results" / self.cfg['disease_name']
         self.features_path = self.cfg['FEATURES']['PATH']
+        self.disease_name = self.cfg['disease_name']
         self.days_before = self.cfg['days_before']
         self.days_after = self.cfg['days_after']
         self.consider_only_first_diagnosis = self.cfg['consider_only_first_diagnosis']
@@ -76,35 +66,11 @@ class label_generator():
 
     def positive_diagnoses(self, merged):
         """Find the positive diagnoses for the given disease.
-
         Args:
             merged (pd.DataFrame): Dataframe containing the patient ids, accession numbers, and dates of the images.
-
         Returns:
             pd.DataFrame: Dataframe containing the patient ids, accession numbers, and dates of the images with a positive diagnosis.
         """
-
-        if self.disease_name == "AAA":
-            # do the same but for repair codes
-            if self.hierarchical_icd10_repair:
-                pos_icd10_repair = merged['ICD10 Code'].str.match(self.icd10_repair_codes_regex, case = False, na = False)
-            else:
-                pos_icd10_repair = merged['ICD10 Code'].str.fullmatch(self.icd10_repair_codes_regex, case = False, na = False)
-
-            if self.hierarchical_icd9_repair:
-                pos_icd9_repair = merged['ICD9 Code'].str.match(self.icd9_repair_codes_regex, case = False, na = False)
-            else:
-                pos_icd9_repair = merged['ICD9 Code'].str.fullmatch(self.icd9_repair_codes_regex, case = False, na = False)
-            
-            merged_repair = merged.loc[pos_icd10_repair | pos_icd9_repair]
-
-            merged_repair = merged_repair[["Patient Id", "Accession Number", "Date", "Imaging_dt", "ICD10 Code", "ICD9 Code"]]
-            # rename colum "Date" to "Repair Date"
-            merged_repair = merged_repair.rename(columns={"Date": "Repair Date"})
-            # rename ICD10 Code to ICD10 Repair Code
-            merged_repair = merged_repair.rename(columns={"ICD10 Code": "ICD10 Repair Code"})
-            # rename ICD9 Code to ICD9 Repair Code
-            merged_repair = merged_repair.rename(columns={"ICD9 Code": "ICD9 Repair Code"})
 
         if self.hierarchical_icd10:
             pos_icd10 = merged['ICD10 Code'].str.match(self.icd10_codes_regex, case = False, na = False)
@@ -119,13 +85,8 @@ class label_generator():
             merged = merged.loc[pos_icd10 | pos_icd9]
         else:
             merged = merged.loc[pos_icd10]
-        merged = merged[["Patient Id", "Accession Number", "Date", "Imaging_dt", "ICD10 Code", "ICD9 Code"]]
-
-        # print the shape of merged_repair
-        if self.disease_name == "AAA":
-            print("Shape of merged_repair: ", merged_repair.shape)
-
-        return (merged, merged_repair) if self.disease_name == "AAA" else merged
+        merged = merged[["Patient Id", "Accession Number", "Date", "Imaging_dt", "Text", "Filename", "ICD10 Code", "ICD9 Code"]]
+        return merged
 
     def encounter_dates(self):
         encounters_iterator = data_iterator(self.cfg['FEATURES']['PATH'], 'encounters.csv', None, 10000)
@@ -147,7 +108,6 @@ class label_generator():
 
     def compute_diagnosis_dates(self, splits = None, rows = 1000000):
         """Compute the diagnosis dates for the given disease and save them to a csv file.
-
         Args:
             splits (int, optional): Number of splits to create. Defaults to None.
             rows (int, optional): Number of rows to read at a time. Defaults to 1000000.
@@ -158,7 +118,7 @@ class label_generator():
         encounters_data = self.encounter_dates()
         mrn_accession = all_mrn_accession.merge(encounters_data, how = 'left', on = ['Patient Id'])
         # drop Filename and Text from mrn_accession
-        mrn_accession = mrn_accession[["Patient Id", "Accession Number", "Imaging_dt", "First Encounter Date", "Last Encounter Date", "Filename", "Text"]]
+        mrn_accession = mrn_accession[["Patient Id", "Accession Number", "Imaging_dt", "First Encounter Date", "Last Encounter Date"]]
 
         types_array = []
         
@@ -175,27 +135,19 @@ class label_generator():
                     num_patients_processed = (pat_data.loc[:, 'Patient Id'].value_counts()).shape[0]
                     merged = pat_data.merge(imaging_df, how = 'left', on = 'Patient Id')
                     positive_function = getattr(self, f"positive_{ehr_type.lower()}")
-                    (processed, processed_repair) = positive_function(merged)
+                    processed = positive_function(merged)
                     processed['Date'] = pd.to_datetime(processed['Date'], format='%m/%d/%Y %H:%M', utc=True)
-                    processed_repair['Repair Date'] = pd.to_datetime(processed_repair['Repair Date'], format='%m/%d/%Y %H:%M', utc=True)
-                    """
                     if self.consider_only_first_diagnosis:
                         processed = processed.groupby(["Patient Id", "Accession Number"], sort = False, as_index = False).apply(lambda x: x.sort_values(['Date'], ascending = True).head(1))
                     else:
                         processed = processed.groupby(["Patient Id", "Accession Number"], sort = False, as_index = False).apply(lambda x: x.sort_values(['Date'], ascending = True))
                     results.append(processed)
-                    """
-                    # merged processed and processed_repair with inner on Patient Id and Accession Number
-                    processed = processed.merge(processed_repair, how = 'outer', on = ['Patient Id', 'Accession Number'])
-                    results.append(processed)
                     t.update(num_patients_processed)
                 outputs = pd.concat(results)
                 #outputs = outputs.groupby(["Patient Id", "Accession Number"]).head(1)
-                #outputs = outputs[["Patient Id", "Accession Number", "Date"]] #, "Text", "Filename"]]
+                outputs = outputs[["Patient Id", "Accession Number", "Date", "Text", "Filename", "ICD10 Code", "ICD9 Code"]]
                 # Rename to Patient Id, Accession Number and Diagnosis Date
-                #outputs.columns = ["Patient Id", "Accession Number", "Diagnosis Date"] #, "Text", "Filename"]
-                # Rename Date to Diagnosis Date
-                outputs = outputs.rename(columns = {'Date' : 'Diagnosis Date'})
+                outputs.columns = ["Patient Id", "Accession Number", "Diagnosis Date", "Text", "Filename", "ICD10 Code", "ICD9 Code"]
                 types_array.append(outputs)
 
         final_positive_array = pd.concat(types_array)
@@ -246,13 +198,9 @@ class label_generator():
 
         # save a file with just 1s for label and include Text
         positive_cases = self.diagnosis_dates.loc[self.diagnosis_dates['Label'] == 1]
-        positive_cases = positive_cases[["Filename", "Imaging Date", "Diagnosis Date", "Text"]]
+        positive_cases = positive_cases[["Patient Id", "Accession Number", "Filename", "Imaging Date", "Diagnosis Date", "ICD10 Code", "ICD9 Code", "Text"]]
+        print(positive_cases.columns)
         positive_cases.to_csv(self.output_folder / "positive_cases.csv", index = False)
-        # randomly select 250 negative cases
-        negative_cases = self.diagnosis_dates.loc[self.diagnosis_dates['Label'] == 3]
-        negative_cases = negative_cases[["Filename", "Imaging Date", "Diagnosis Date", "Text"]]
-        negative_cases = negative_cases.sample(n = 250, random_state = 42)
-        negative_cases.to_csv(self.output_folder / "negative_cases.csv", index = False)
 
 
         self.diagnosis_dates = self.diagnosis_dates[["Patient Id", "Accession Number", "Label"]]

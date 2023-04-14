@@ -1,10 +1,10 @@
 disease_name: AAA
-days_before: 60
-days_after: 1000000000000000
+days_before: 1000000000000
+days_after: 1000000000000
 consider_only_first_diagnosis: False
 
 ICD10:
-  Hierarchical: True
+  Hierarchical: False
   Codes:
     - I71.0
     - I71.3
@@ -13,37 +13,12 @@ ICD10:
     - I71.2
 
 ICD9:
-  Hierarchical: True
+  Hierarchical: False
   Codes:
     - 441.0
     - 441.3
     - 441.1
     - 441.4
-
-ICD10_repair:
-  Hierarchical: True
-  Codes:
-    - 04V03DZ
-    - 04V03EZ
-    - 04500ZZ
-    - 04503ZZ
-    - 04R007Z
-    - 04R00JZ
-    - 04R00KZ
-    - 04R047Z
-    - 04R04JZ
-    - 04R04KZ
-    - 04U03JZ
-    - 04U04JZ
-
-ICD9_repair:
-  Hierarchical: True
-  Codes:
-    - 3834
-    - 3844
-    - 3971
-    - 3978
-    - 3925
     
 FEATURES:
   # PATH: /bmrNAS/scandata/abct_ehr/clinical_data/truncated_v1/

@@ -6,8 +6,8 @@ import numpy as np
 from starr_labeler.features.extract_features import extract_base
 
 class extract_med_orders(extract_base):
-    def __init__(self, config, file_name, feature_type, save_truncated):
-        super().__init__(config, file_name, feature_type, save_truncated)
+    def __init__(self, config, file_name, feature_type):
+        super().__init__(config, file_name, feature_type)
 
     def process_data(self, pat_data):
         #med_orders_regex = "|".join(list(self.cfg['FEATURES']['TYPES']['MED_ORDERS']['INCLUDE'].keys()))

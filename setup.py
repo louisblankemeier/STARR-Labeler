@@ -8,10 +8,15 @@ packages=find_packages(),
 install_requires=[
         'pandas',
         'hydra-core',
-        'torch',
-        'transformers',
         'numpy',
         'regex',
         'matplotlib',
+        'tqdm',
     ],
+extras_require={
+    "ml": [
+        'torch',
+        'transformers',
+          ],
+    }
 )
