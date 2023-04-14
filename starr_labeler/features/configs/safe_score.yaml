@@ -36,6 +36,7 @@ FEATURES:
       TYPE: 'Result'
       Value: 'Value'
       INCLUDE: {'Platelet count': None, 'ALT \(SGPT\), Ser/Plas': None, 'AST \(SGOT\), Ser/Plas': None, 'Globulin': None}
+      BINS: 1
       BIN_DURATION: 1
       AGGREGATE: 'mean'
       FILL_NA: 'median'
