@@ -123,7 +123,7 @@ class extract_base:
 
         if self.cfg['FEATURES']['TYPES'][self.feature_type.upper()]['SAVE']:
             if not os.path.isdir(self.cfg['FEATURES']['SAVE_DIR']):
-                os.mkdir(self.cfg['FEATURES']['SAVE_DIR'])
+                os.makedirs(self.cfg['FEATURES']['SAVE_DIR'])
             lab_input_features.to_csv(os.path.join(self.cfg['FEATURES']['SAVE_DIR'], self.file), index = False)
             
             return lab_input_features
