@@ -1,55 +1,12 @@
-TRUNCATE:
-  PATH: /bmrNAS/scandata/abct_ehr/clinical_data/
-  SAVE_DIR: /dataNAS/people/lblankem/opportunistic_ct/libraries/starr_labeler/starr_labeler/truncated/
-  NUM_PATIENTS: 25000
-  DATES: 'CT'
-  TYPES:
-    DEMOGRAPHICS: 
-      USE: False
-      FILE_NAME: "demographics.csv"
-      USE_COLS: ['Patient Id', 'Gender', 'Race', 'Ethnicity', 'Date of Birth']
-    VITALS: 
-      USE: True
-      FILE_NAME: "flowsheets.csv"
-      USE_COLS: ['Patient Id', 'Measure', 'Value', 'Date']
-    LABS: 
-      USE: False
-      FILE_NAME: "labs.csv"
-      USE_COLS: ['Patient Id', 'Value', 'Taken Date', 'Result', 'Reference High', 'Reference Low', 'Units']
-    DIAGNOSES:
-      USE: False
-      FILE_NAME: "diagnoses.csv"
-      USE_COLS: ['Patient Id', 'Date', 'ICD10 Code']
-    PROCEDURES:
-      USE: False
-      FILE_NAME: "procedures.csv"
-      USE_COLS: ['Patient Id', 'Code Type', 'Code', 'Date']
-    MED_ORDERS:
-      USE: False
-      FILE_NAME: "med_orders.csv"
-      #USE_COLS: ['Patient Id', 'Therapeutic Class', 'Sig', 'Start Date']
-    MED_ADMIN:
-      USE: False
-      FILE_NAME: "med_admin.csv"
-    RADIOLOGY_REPORT_META:
-      USE: False
-      FILE_NAME: "radiology_report_meta.csv"
-    CLINICAL_NOTE_META:
-      USE: False
-      FILE_NAME: "clinical_note_meta.csv"
-    ENCOUNTERS:
-      USE: False
-      FILE_NAME: "encounters.csv"
-    
 FEATURES:
-  PATH: /bmrNAS/scandata/abct_ehr/clinical_data/truncated_v1/
+  PATH: /bmrNAS/scandata/abct_ehr/clinical_data/
   SAVE_DIR: /dataNAS/people/lblankem/stanford_extract/starr_labeler/features/results
   NUM_PATIENTS: 23547
   DATES: 'CT'
   LAG_AFTER_DATES: 14
   TYPES:
     DEMOGRAPHICS: 
-      USE: False
+      USE: True
       FILE_NAME: "demographics.csv"
       USE_COLS: ['Patient Id', 'Gender', 'Race', 'Ethnicity', 'Date of Birth']
       INCLUDE: {'Gender': None, 'Race': None, 'Ethnicity': None, 'Date of Birth': None} # Date of Birth here gets converted to age.

@@ -14,7 +14,6 @@ pd.options.mode.chained_assignment = None
 
 class label_generator():
     """Class for generating labels for the given disease.
-
     Attributes:
         cfg (Dict): Dictionary containing the configuration parameters.
         icd10_codes_regex (str): Regex for the ICD10 codes.
@@ -37,7 +36,6 @@ class label_generator():
 
     def __init__(self, config):
         """Initialize the label generator.
-
         Args:
             config (Dict): Dictionary containing the configuration parameters.
             output_folder (Path): Path to the output folder.
@@ -68,10 +66,8 @@ class label_generator():
 
     def positive_diagnoses(self, merged):
         """Find the positive diagnoses for the given disease.
-
         Args:
             merged (pd.DataFrame): Dataframe containing the patient ids, accession numbers, and dates of the images.
-
         Returns:
             pd.DataFrame: Dataframe containing the patient ids, accession numbers, and dates of the images with a positive diagnosis.
         """
@@ -89,7 +85,7 @@ class label_generator():
             merged = merged.loc[pos_icd10 | pos_icd9]
         else:
             merged = merged.loc[pos_icd10]
-        merged = merged[["Patient Id", "Accession Number", "Date", "Imaging_dt", "Text", "Filename"]]
+        merged = merged[["Patient Id", "Accession Number", "Date", "Imaging_dt", "Text", "Filename", "ICD10 Code", "ICD9 Code"]]
         return merged
 
     def encounter_dates(self):
@@ -112,7 +108,6 @@ class label_generator():
 
     def compute_diagnosis_dates(self, splits = None, rows = 1000000):
         """Compute the diagnosis dates for the given disease and save them to a csv file.
-
         Args:
             splits (int, optional): Number of splits to create. Defaults to None.
             rows (int, optional): Number of rows to read at a time. Defaults to 1000000.
@@ -149,10 +144,10 @@ class label_generator():
                     results.append(processed)
                     t.update(num_patients_processed)
                 outputs = pd.concat(results)
-                outputs = outputs.groupby(["Patient Id", "Accession Number"]).head(1)
-                outputs = outputs[["Patient Id", "Accession Number", "Date", "Text", "Filename"]]
+                #outputs = outputs.groupby(["Patient Id", "Accession Number"]).head(1)
+                outputs = outputs[["Patient Id", "Accession Number", "Date", "Text", "Filename", "ICD10 Code", "ICD9 Code"]]
                 # Rename to Patient Id, Accession Number and Diagnosis Date
-                outputs.columns = ["Patient Id", "Accession Number", "Diagnosis Date", "Text", "Filename"]
+                outputs.columns = ["Patient Id", "Accession Number", "Diagnosis Date", "Text", "Filename", "ICD10 Code", "ICD9 Code"]
                 types_array.append(outputs)
 
         final_positive_array = pd.concat(types_array)
@@ -203,7 +198,8 @@ class label_generator():
 
         # save a file with just 1s for label and include Text
         positive_cases = self.diagnosis_dates.loc[self.diagnosis_dates['Label'] == 1]
-        positive_cases = positive_cases[["Filename", "Imaging Date", "Diagnosis Date", "Text"]]
+        positive_cases = positive_cases[["Patient Id", "Accession Number", "Filename", "Imaging Date", "Diagnosis Date", "ICD10 Code", "ICD9 Code", "Text"]]
+        print(positive_cases.columns)
         positive_cases.to_csv(self.output_folder / "positive_cases.csv", index = False)
 
 

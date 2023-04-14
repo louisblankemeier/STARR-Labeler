@@ -1,6 +1,6 @@
 disease_name: AAA
-days_before: 60
-days_after: 60
+days_before: 1000000000000
+days_after: 1000000000000
 consider_only_first_diagnosis: False
 
 ICD10:
