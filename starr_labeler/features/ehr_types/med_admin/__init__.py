@@ -1,1 +1,0 @@
-from .extract_med_admin import *
