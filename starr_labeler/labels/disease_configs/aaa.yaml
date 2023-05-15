@@ -1,64 +1,47 @@
-disease_name: AAA
-days_before: 1000000000000
-days_after: 1000000000000
-consider_only_first_diagnosis: False
+DISEASE_NAME: AAA
+DAYS_BEFORE: 1825
+DAYS_AFTER: 0
+CONSIDER_ONLY_FIRST_DIAGNOSIS: False
+PATH: /bmrNAS/scandata/abct_ehr/clinical_data/
+NUM_PATIENTS: 23547
+DATES: 'CT'
 
-ICD10:
-  Hierarchical: False
-  Codes:
-    - I71.0
-    - I71.3
-    - I71.1
-    - I71.4
-    - I71.2
-
-ICD9:
-  Hierarchical: False
-  Codes:
-    - 441.0
-    - 441.3
-    - 441.1
-    - 441.4
-    
-FEATURES:
-  # PATH: /bmrNAS/scandata/abct_ehr/clinical_data/truncated_v1/
-  PATH: /bmrNAS/scandata/abct_ehr/clinical_data/
-  NUM_PATIENTS: 23547
-  DATES: 'CT'
-  TYPES:
-    DEMOGRAPHICS: 
-      USE: True
-      FILE_NAME: "demographics.csv"
-      USE_COLS: ['Patient Id', 'Gender', 'Race', 'Ethnicity', 'Date of Birth']
-    VITALS: 
-      USE: True
-      FILE_NAME: "flowsheets.csv"
-      USE_COLS: ['Patient Id', 'Measure', 'Value', 'Date']
-    LABS: 
-      USE: True
-      FILE_NAME: "labs.csv"
-      USE_COLS: ['Patient Id', 'Value', 'Taken Date', 'Result', 'Reference High', 'Reference Low', 'Units']
-    DIAGNOSES:
-      USE: True
-      FILE_NAME: "diagnoses.csv"
-      USE_COLS: ['Patient Id', 'Date', 'ICD10 Code', 'ICD9 Code']
-    PROCEDURES:
-      USE: True
-      FILE_NAME: "procedures.csv"
-      USE_COLS: ['Patient Id', 'Code Type', 'Code', 'Date']
-    MED_ORDERS:
-      USE: True
-      FILE_NAME: "med_orders.csv"
-      USE_COLS: ['Patient Id', 'Therapeutic Class', 'Sig', 'Start Date']
-    MED_ADMIN:
-      USE: False
-      FILE_NAME: "med_admin.csv"
-    RADIOLOGY_REPORT_META:
-      USE: False
-      FILE_NAME: "radiology_report_meta.csv"
-    CLINICAL_NOTE_META:
-      USE: False
-      FILE_NAME: "clinical_note_meta.csv"
-    ENCOUNTERS:
-      USE: False
-      FILE_NAME: "encounters.csv"
+TYPES:
+  DIAGNOSES:
+    FILE_NAME: "diagnoses.csv"
+    USE_COLS: ['Patient Id', 'Date', 'ICD10 Code', 'ICD9 Code']
+    ICD10:
+      Hierarchical: False
+      Codes:
+        - I71.0
+        - I71.3
+        - I71.1
+        - I71.4
+        - I71.2
+    ICD9:
+      Hierarchical: False
+      Codes:
+        - 441.0
+        - 441.3
+        - 441.1
+        - 441.4
+  VITALS: 
+    FILE_NAME: "flowsheets.csv"
+    USE_COLS: ['Patient Id', 'Measure', 'Value', 'Date']
+  LABS: 
+    FILE_NAME: "labs.csv"
+    USE_COLS: ['Patient Id', 'Value', 'Taken Date', 'Result', 'Reference High', 'Reference Low', 'Units']
+  PROCEDURES:
+    FILE_NAME: "procedures.csv"
+    USE_COLS: ['Patient Id', 'Code Type', 'Code', 'Date']
+  MED_ORDERS:
+    FILE_NAME: "med_orders.csv"
+    USE_COLS: ['Patient Id', 'Therapeutic Class', 'Sig', 'Start Date']
+  MED_ADMIN:
+    FILE_NAME: "med_admin.csv"
+  RADIOLOGY_REPORT_META:
+    FILE_NAME: "radiology_report_meta.csv"
+  CLINICAL_NOTE_META:
+    FILE_NAME: "clinical_note_meta.csv"
+  ENCOUNTERS:
+    FILE_NAME: "encounters.csv"

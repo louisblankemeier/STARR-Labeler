@@ -1,12 +1,9 @@
 import os
 import pandas as pd
-from itertools import chain
 from tqdm import tqdm
-from sklearn.model_selection import GroupKFold
 import datetime
 from pathlib import Path
 from typing import Dict
-import sys
 
 from starr_labeler.utils import *
 
@@ -41,21 +38,21 @@ class label_generator():
             output_folder (Path): Path to the output folder.
         """
         self.cfg: Dict = config
-        self.icd10_codes_regex: str = '|'.join(self.cfg['ICD10']['Codes'])
-        self.hierarchical_icd10: bool = self.cfg['ICD10']['Hierarchical']
+        self.icd10_codes_regex: str = '|'.join(self.cfg["TYPES"]["DIAGNOSES"]['ICD10']['Codes'])
+        self.hierarchical_icd10: bool = self.cfg["TYPES"]["DIAGNOSES"]['ICD10']['Hierarchical']
 
-        if 'ICD9' in self.cfg:
-            icd9_list = self.cfg['ICD9']['Codes']
+        if 'ICD9' in self.cfg["TYPES"]["DIAGNOSES"]:
+            icd9_list = self.cfg["TYPES"]["DIAGNOSES"]['ICD9']['Codes']
             icd9_list = [str(icd9) for icd9 in icd9_list]
             self.icd9_codes_regex: str = '|'.join(icd9_list)
-            self.hierarchical_icd9: bool = self.cfg['ICD9']['Hierarchical']
+            self.hierarchical_icd9: bool = self.cfg["TYPES"]["DIAGNOSES"]['ICD9']['Hierarchical']
 
-        self.output_folder: Path = Path(__file__).parent / "results" / self.cfg['disease_name']
-        self.features_path = self.cfg['FEATURES']['PATH']
-        self.disease_name = self.cfg['disease_name']
-        self.days_before = self.cfg['days_before']
-        self.days_after = self.cfg['days_after']
-        self.consider_only_first_diagnosis = self.cfg['consider_only_first_diagnosis']
+        self.output_folder: Path = Path(__file__).parent / "results" / self.cfg['DISEASE_NAME']
+        self.features_path = self.cfg['PATH']
+        self.disease_name = self.cfg['DISEASE_NAME']
+        self.days_before = self.cfg['DAYS_BEFORE']
+        self.days_after = self.cfg['DAYS_AFTER']
+        self.consider_only_first_diagnosis = self.cfg['CONSIDER_ONLY_FIRST_DIAGNOSIS']
 
         # create output folder if it doesn't exist and name it results
         if not os.path.exists(self.output_folder):
@@ -89,7 +86,7 @@ class label_generator():
         return merged
 
     def encounter_dates(self):
-        encounters_iterator = data_iterator(self.cfg['FEATURES']['PATH'], 'encounters.csv', None, 10000)
+        encounters_iterator = data_iterator(self.cfg['PATH'], 'encounters.csv', None, 10000)
 
         encounters_dataframes = []
         for encounters in encounters_iterator:
@@ -112,25 +109,22 @@ class label_generator():
             splits (int, optional): Number of splits to create. Defaults to None.
             rows (int, optional): Number of rows to read at a time. Defaults to 1000000.
         """
-
-        imaging_df = self.imaging_dates(self.cfg['FEATURES']['DATES'])
+        imaging_df = self.imaging_dates(self.cfg['DATES'])
         all_mrn_accession = imaging_df[["Patient Id", "Accession Number", "Imaging_dt", "Filename", "Text"]]
         encounters_data = self.encounter_dates()
         mrn_accession = all_mrn_accession.merge(encounters_data, how = 'left', on = ['Patient Id'])
-        # drop Filename and Text from mrn_accession
         mrn_accession = mrn_accession[["Patient Id", "Accession Number", "Imaging_dt", "First Encounter Date", "Last Encounter Date"]]
 
         types_array = []
         
-        file_dict = {key : self.cfg['FEATURES']['TYPES'][key]['FILE_NAME'] for key in self.cfg['FEATURES']['TYPES'].keys()}
+        file_dict = {key : self.cfg['TYPES'][key]['FILE_NAME'] for key in self.cfg['TYPES'].keys()}
         for ehr_type in file_dict.keys():
             if hasattr(self, f"positive_{ehr_type.lower()}"):
-                #iterator = data_iterator(self.cfg['FEATURES']['PATH'], file_dict[ehr_type], None, rows)
-                pat_iter_class = patient_iterator(self.cfg['FEATURES']['PATH'], file_dict[ehr_type], None)
+                pat_iter_class = patient_iterator(self.cfg['PATH'], file_dict[ehr_type], None)
                 iterator = iter(pat_iter_class)
                 results = []
                 print(f"Looking through {ehr_type.lower()}...")
-                t = tqdm(total = self.cfg['FEATURES']['NUM_PATIENTS'])
+                t = tqdm(total = self.cfg['NUM_PATIENTS'])
                 for pat_data in iterator:
                     num_patients_processed = (pat_data.loc[:, 'Patient Id'].value_counts()).shape[0]
                     merged = pat_data.merge(imaging_df, how = 'left', on = 'Patient Id')
@@ -144,9 +138,7 @@ class label_generator():
                     results.append(processed)
                     t.update(num_patients_processed)
                 outputs = pd.concat(results)
-                #outputs = outputs.groupby(["Patient Id", "Accession Number"]).head(1)
                 outputs = outputs[["Patient Id", "Accession Number", "Date", "Text", "Filename", "ICD10 Code", "ICD9 Code"]]
-                # Rename to Patient Id, Accession Number and Diagnosis Date
                 outputs.columns = ["Patient Id", "Accession Number", "Diagnosis Date", "Text", "Filename", "ICD10 Code", "ICD9 Code"]
                 types_array.append(outputs)
 
@@ -196,13 +188,6 @@ class label_generator():
         self.diagnosis_dates.loc[twos, 'Label'] = 2
         self.diagnosis_dates.loc[threes, 'Label'] = 3
 
-        # save a file with just 1s for label and include Text
-        positive_cases = self.diagnosis_dates.loc[self.diagnosis_dates['Label'] == 1]
-        positive_cases = positive_cases[["Patient Id", "Accession Number", "Filename", "Imaging Date", "Diagnosis Date", "ICD10 Code", "ICD9 Code", "Text"]]
-        print(positive_cases.columns)
-        positive_cases.to_csv(self.output_folder / "positive_cases.csv", index = False)
-
-
         self.diagnosis_dates = self.diagnosis_dates[["Patient Id", "Accession Number", "Label"]]
 
         splits = None
@@ -241,7 +226,7 @@ class label_generator():
         imaging_df.loc[:, 'Imaging_dt'] = pd.to_datetime(imaging_df['Date'], utc=True)
         imaging_df = imaging_df[['Patient Id', 'Accession Number', 'Imaging_dt']]
         imaging_df = imaging_df.groupby(['Patient Id', 'Accession Number']).head(1)
-        cross_walk_data = pd.DataFrame(pd.read_csv(os.path.join(str(Path(self.cfg['FEATURES']['PATH']).parent), 'priority_crosswalk_all.csv')))
+        cross_walk_data = pd.DataFrame(pd.read_csv(os.path.join(str(Path(self.cfg['PATH']).parent), 'priority_crosswalk_all.csv')))
         cross_walk_data = cross_walk_data[['accession', 'filename']]
         cross_walk_data.columns = ['Accession Number', 'Filename']
         cross_walk_data['Accession Number'] = cross_walk_data['Accession Number'].astype(str)
