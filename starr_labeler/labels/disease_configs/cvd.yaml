@@ -237,3 +237,20 @@ TYPES:
     FILE_NAME: "clinical_note_meta.csv"
   ENCOUNTERS:
     FILE_NAME: "encounters.csv"
+
+HyDE:
+  FILTER_REGEX: NSTEMI|(myocardial ischemia)|(ischemic heart disease)|(cardiac ischemia)|(myocardial infarction)|(myocardial necrosis)|(coronary heart disease)|(coronary artery disease)|(heart attack)|(stroke)|(CAD)|(STEMI)|(cerebrovascular disease)|(peripheral artery disease)|(stroke)|(agina)|(CVD)"
+  MASK_REPLACEMENT_REGEX: "^NSTEMI$|^myocardial_ischemia|^ischemic_heart_disease|^cardiac_ischemia|^myocardial_infarction|^myocardial_necrosis|^coronary_heart_disease|^coronary_artery_disease|^heart_attack|^stroke|^CAD$|^STEMI$|cerebrovascular_disease|peripheral_artery_disease|stroke|^agina|^CVD$"
+  
+  CLINICAL_NOTES_PATH: "/bmrNAS/scandata/abct_ehr/clinical_data/"
+  OUTPUT_DIR: "/dataNAS/people/lblankem/starr_labeler/starr_labeler/labels/results/CVD"
+  OUTPUT_FILE_NAME: "mcms"
+
+  NOTE_TYPES: ["Other Note", "Progress Note", "Inpatient", "ED Note", "Consultation Note", "Progress/Discharge/Transfer Summary", \
+              "Letter", "Other", "Nursing Sign Out Note", "History and Physical", "Progress Note", "Outpatient", "IP Consult", \
+              "Discharge/Transfer Summary"]
+
+  BEFORE_TERMS: ["occlusive", "obstructive", "1 vessel", "transplant", "non-q wave", "ST elevation", "3-vessel", "non-ST elevated", "non-ST elevation", "type II", "preclinical", "anterior", "acute", "inferior", "chronic", "postoperative", "multivessel"]
+  AFTER_TERMS: ["; chronic", "ischemic heart disease", "status"]
+
+  CONTEXT_SIMILARITY_CHARS: 20
