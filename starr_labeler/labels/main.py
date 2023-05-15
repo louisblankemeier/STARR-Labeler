@@ -13,10 +13,4 @@ def main(cfg):
     labels_class = label_generator(cfg)
     labels_class.compute_diagnosis_dates()
     labels_class.compute_diagnosis_labels()
-    '''
-    mcm_class = mcm_generator(cfg)
-    mcm_class.generate_mcm_json()
-    mcm_class.generate_mcm_dataframe()
-    mcm_class.run_hyde()
-    '''
 main()
