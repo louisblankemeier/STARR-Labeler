@@ -1,3 +1,7 @@
+defaults:
+  - _self_
+  - base_config
+
 DISEASE_NAME: hypertension
 DAYS_AFTER: 1825
 DAYS_BEFORE: 0

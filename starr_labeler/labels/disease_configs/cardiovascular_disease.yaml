@@ -1,3 +1,7 @@
+defaults:
+  - _self_ 
+  - base_config
+
 DISEASE_NAME: cardiovascular_disease
 DAYS_AFTER: 1825
 DAYS_BEFORE: 0
@@ -11,7 +15,7 @@ TYPES:
     FILE_NAME: "diagnoses.csv"
     USE_COLS: ['Patient Id', 'Date', 'ICD10 Code']
     ICD10:
-      Hierarchical: False
+      Hierarchical: True
       Codes:
         - I24.0
         - I24.9

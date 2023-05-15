@@ -1,3 +1,7 @@
+defaults:
+  - _self_
+  - base_config
+
 DISEASE_NAME: abdominal_aortic_aneurysm
 DAYS_AFTER: 1825
 DAYS_BEFORE: 0
@@ -11,7 +15,7 @@ TYPES:
     FILE_NAME: "diagnoses.csv"
     USE_COLS: ['Patient Id', 'Date', 'ICD10 Code', 'ICD9 Code']
     ICD10:
-      Hierarchical: False
+      Hierarchical: True
       Codes:
         - I71.0
         - I71.3
@@ -19,7 +23,7 @@ TYPES:
         - I71.4
         - I71.2
     ICD9:
-      Hierarchical: False
+      Hierarchical: True
       Codes:
         - 441.0
         - 441.3

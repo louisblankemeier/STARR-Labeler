@@ -52,7 +52,7 @@ class label_generator:
             self.icd9_codes_regex: str = "|".join(icd9_list)
             self.hierarchical_icd9: bool = self.cfg["TYPES"]["DIAGNOSES"]["ICD9"]["Hierarchical"]
 
-        self.output_folder: Path = Path(__file__).parent / "results" / self.cfg["DISEASE_NAME"]
+        self.output_folder: Path = Path(__file__).parent / "output_files" / self.cfg["DISEASE_NAME"]
         self.features_path = self.cfg["PATH"]
         self.disease_name = self.cfg["DISEASE_NAME"]
         self.days_before = self.cfg["DAYS_BEFORE"]
@@ -216,15 +216,15 @@ class label_generator:
         )
         # change name of Imaging_dt to Imaging Date
         results = results.rename(columns={"Imaging_dt": "Imaging Date"})
-        print("Saving results...")
-        results.to_csv(self.output_folder / "diagnosis_dates.csv", index=False)
+        print("Saving imaging dates, first encounter dates, last encounter dates, and diagnosis dates in diagnosis_dates.csv...")
+        results.to_csv(self.output_folder / f"diagnosis_dates.csv", index=False)
         self.diagnosis_dates = results
         print("Done!")
         print("")
         print("Total Number of Patients: ", results["Patient Id"].nunique())
         print("Total Number of Images: ", results["Accession Number"].nunique())
         print(
-            "Total Number of Positive Patients: ",
+            "Total Number of Positive Patients in EHR: ",
             results.loc[~results["Diagnosis Date"].isna(), "Patient Id"].nunique(),
         )
         print("")
@@ -277,31 +277,35 @@ class label_generator:
         self.diagnosis_dates.loc[ones, "Label"] = 1
         self.diagnosis_dates.loc[twos, "Label"] = 2
         self.diagnosis_dates.loc[threes, "Label"] = 3
+        self.diagnosis_dates["Label"] = self.diagnosis_dates["Label"].astype(int)
 
         self.diagnosis_dates = self.diagnosis_dates[["Patient Id", "Accession Number", "Label"]]
 
         splits = None
         if splits is not None:
             self.diagnosis_dates = get_splits(splits, self.diagnosis_dates)
-
-        self.diagnosis_dates.to_csv(self.output_folder / "diagnosis_labels.csv", index=False)
+        
+        print(f"Saving labels for {round(self.days_after / 30.5)} months of followup in diagnosis_labels_{round(self.days_after / 30.5)}_months.csv...")
+        self.diagnosis_dates.to_csv(self.output_folder / f"diagnosis_labels_{round(self.days_after / 30.5)}_months.csv", index=False)
+        print("Done!")
+        print("")
 
         print(
             f"Number of images in class 0 (no diagnosis before imaging date"
-            f" + days_after and sufficient followup): {np.sum(zeros)}"
+            f" + days_after [{round(self.days_after / 30.5)} months] and sufficient followup): {np.sum(zeros)}"
         )
         print(
             f"Number of patients in class 0 (no diagnosis before imaging date"
-            f" + days_after and sufficient followup): "
+            f" + days_after [{round(self.days_after / 30.5)} months] and sufficient followup): "
             f"{self.diagnosis_dates.loc[self.diagnosis_dates['Label'] == 0]['Patient Id'].nunique()}"
         )
         print(
             f"Number of images in class 1 (diagnosis between imaging date"
-            f" - days_before and imaging date + days_after): {np.sum(ones)}"
+            f" - days_before and imaging date + days_after [{round(self.days_after / 30.5)} months]): {np.sum(ones)}"
         )
         print(
             f"Number of patients in class 1 (diagnosis between imaging date"
-            f" - days_before and imaging date + days_after): "
+            f" - days_before and imaging date + days_after [{round(self.days_after / 30.5)} months]): "
             f"{self.diagnosis_dates.loc[self.diagnosis_dates['Label'] == 1]['Patient Id'].nunique()}"
         )
         print(
