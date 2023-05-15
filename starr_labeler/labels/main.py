@@ -6,7 +6,6 @@ import hydra
 from typing import List, Dict, Tuple, NamedTuple, Optional
 
 from starr_labeler.labels.label_generator import label_generator
-from starr_labeler.labels.mcm_generator import mcm_generator
 
 @hydra.main(version_base=None, config_path="disease_configs/", config_name = 'aaa.yaml')
 def main(cfg):
