@@ -216,8 +216,11 @@ class label_generator:
         )
         # change name of Imaging_dt to Imaging Date
         results = results.rename(columns={"Imaging_dt": "Imaging Date"})
-        print("Saving imaging dates, first encounter dates, last encounter dates, and diagnosis dates in diagnosis_dates.csv...")
-        results.to_csv(self.output_folder / f"diagnosis_dates.csv", index=False)
+        print(
+            "Saving imaging dates, first encounter dates,"
+            " last encounter dates, and diagnosis dates in diagnosis_dates.csv..."
+        )
+        results.to_csv(self.output_folder / "diagnosis_dates.csv", index=False)
         self.diagnosis_dates = results
         print("Done!")
         print("")
@@ -284,15 +287,22 @@ class label_generator:
         splits = None
         if splits is not None:
             self.diagnosis_dates = get_splits(splits, self.diagnosis_dates)
-        
-        print(f"Saving labels for {round(self.days_after / 30.5)} months of followup in diagnosis_labels_{round(self.days_after / 30.5)}_months.csv...")
-        self.diagnosis_dates.to_csv(self.output_folder / f"diagnosis_labels_{round(self.days_after / 30.5)}_months.csv", index=False)
+
+        print(
+            f"Saving labels for {round(self.days_after / 30.5)} months"
+            f" of followup in diagnosis_labels_{round(self.days_after / 30.5)}_months.csv..."
+        )
+        self.diagnosis_dates.to_csv(
+            self.output_folder / f"diagnosis_labels_{round(self.days_after / 30.5)}_months.csv",
+            index=False,
+        )
         print("Done!")
         print("")
 
         print(
             f"Number of images in class 0 (no diagnosis before imaging date"
-            f" + days_after [{round(self.days_after / 30.5)} months] and sufficient followup): {np.sum(zeros)}"
+            f" + days_after [{round(self.days_after / 30.5)} months]"
+            f" and sufficient followup): {np.sum(zeros)}"
         )
         print(
             f"Number of patients in class 0 (no diagnosis before imaging date"
@@ -301,7 +311,8 @@ class label_generator:
         )
         print(
             f"Number of images in class 1 (diagnosis between imaging date"
-            f" - days_before and imaging date + days_after [{round(self.days_after / 30.5)} months]): {np.sum(ones)}"
+            f" - days_before and imaging date + days_after"
+            f" [{round(self.days_after / 30.5)} months]): {np.sum(ones)}"
         )
         print(
             f"Number of patients in class 1 (diagnosis between imaging date"
@@ -317,7 +328,9 @@ class label_generator:
             f" - days_before): "
             f"{self.diagnosis_dates.loc[self.diagnosis_dates['Label'] == 2]['Patient Id'].nunique()}"
         )
-        print(f"Number of images in class 3 (no diagnosis and insufficient followup): {np.sum(threes)}")
+        print(
+            f"Number of images in class 3 (no diagnosis and insufficient followup): {np.sum(threes)}"
+        )
         print(
             f"Number of patients in class 3 (no diagnosis and insufficient followup): "
             f"{self.diagnosis_dates.loc[self.diagnosis_dates['Label'] == 3]['Patient Id'].nunique()}"
@@ -326,10 +339,34 @@ class label_generator:
 
         table = [
             ["Class", "Number of Images", "Number of Patients"],
-            ["0", np.sum(zeros), self.diagnosis_dates.loc[self.diagnosis_dates['Label'] == 0]['Patient Id'].nunique()],
-            ["1", np.sum(ones), self.diagnosis_dates.loc[self.diagnosis_dates['Label'] == 1]['Patient Id'].nunique()],
-            ["2", np.sum(twos), self.diagnosis_dates.loc[self.diagnosis_dates['Label'] == 2]['Patient Id'].nunique()],
-            ["3", np.sum(threes), self.diagnosis_dates.loc[self.diagnosis_dates['Label'] == 3]['Patient Id'].nunique()]
+            [
+                "0",
+                np.sum(zeros),
+                self.diagnosis_dates.loc[self.diagnosis_dates["Label"] == 0][
+                    "Patient Id"
+                ].nunique(),
+            ],
+            [
+                "1",
+                np.sum(ones),
+                self.diagnosis_dates.loc[self.diagnosis_dates["Label"] == 1][
+                    "Patient Id"
+                ].nunique(),
+            ],
+            [
+                "2",
+                np.sum(twos),
+                self.diagnosis_dates.loc[self.diagnosis_dates["Label"] == 2][
+                    "Patient Id"
+                ].nunique(),
+            ],
+            [
+                "3",
+                np.sum(threes),
+                self.diagnosis_dates.loc[self.diagnosis_dates["Label"] == 3][
+                    "Patient Id"
+                ].nunique(),
+            ],
         ]
 
         print(tabulate(table, headers="firstrow"))
