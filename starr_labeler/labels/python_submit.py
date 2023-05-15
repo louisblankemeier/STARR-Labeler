@@ -1,7 +1,7 @@
 import os
 
 
-def python_submit(command, node=None, ngpus=1):
+def python_submit(command, node=None, ngpus=0):
     if not os.path.exists("./slurm"):
         os.makedirs("./slurm")
     bash_file = open("./slurm.sh", "w")
