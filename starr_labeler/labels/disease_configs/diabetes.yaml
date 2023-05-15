@@ -1,4 +1,4 @@
-DISEASE_NAME: AAA
+DISEASE_NAME: diabetes
 DAYS_AFTER: 1825
 DAYS_BEFORE: 0
 CONSIDER_ONLY_FIRST_DIAGNOSIS: True
@@ -11,20 +11,13 @@ TYPES:
     FILE_NAME: "diagnoses.csv"
     USE_COLS: ['Patient Id', 'Date', 'ICD10 Code', 'ICD9 Code']
     ICD10:
-      Hierarchical: False
+      Hierarchical: True
       Codes:
-        - I71.0
-        - I71.3
-        - I71.1
-        - I71.4
-        - I71.2
-    ICD9:
-      Hierarchical: False
-      Codes:
-        - 441.0
-        - 441.3
-        - 441.1
-        - 441.4
+        - E08
+        - E09
+        - E10
+        - E11
+        - E13
   VITALS: 
     FILE_NAME: "flowsheets.csv"
     USE_COLS: ['Patient Id', 'Measure', 'Value', 'Date']

@@ -1,0 +1,47 @@
+DISEASE_NAME: abdominal_aortic_aneurysm
+DAYS_AFTER: 1825
+DAYS_BEFORE: 0
+CONSIDER_ONLY_FIRST_DIAGNOSIS: True
+PATH: /bmrNAS/scandata/abct_ehr/clinical_data/
+NUM_PATIENTS: 23547
+DATES: 'CT'
+
+TYPES:
+  DIAGNOSES:
+    FILE_NAME: "diagnoses.csv"
+    USE_COLS: ['Patient Id', 'Date', 'ICD10 Code', 'ICD9 Code']
+    ICD10:
+      Hierarchical: False
+      Codes:
+        - I71.0
+        - I71.3
+        - I71.1
+        - I71.4
+        - I71.2
+    ICD9:
+      Hierarchical: False
+      Codes:
+        - 441.0
+        - 441.3
+        - 441.1
+        - 441.4
+  VITALS: 
+    FILE_NAME: "flowsheets.csv"
+    USE_COLS: ['Patient Id', 'Measure', 'Value', 'Date']
+  LABS: 
+    FILE_NAME: "labs.csv"
+    USE_COLS: ['Patient Id', 'Value', 'Taken Date', 'Result', 'Reference High', 'Reference Low', 'Units']
+  PROCEDURES:
+    FILE_NAME: "procedures.csv"
+    USE_COLS: ['Patient Id', 'Code Type', 'Code', 'Date']
+  MED_ORDERS:
+    FILE_NAME: "med_orders.csv"
+    USE_COLS: ['Patient Id', 'Therapeutic Class', 'Sig', 'Start Date']
+  MED_ADMIN:
+    FILE_NAME: "med_admin.csv"
+  RADIOLOGY_REPORT_META:
+    FILE_NAME: "radiology_report_meta.csv"
+  CLINICAL_NOTE_META:
+    FILE_NAME: "clinical_note_meta.csv"
+  ENCOUNTERS:
+    FILE_NAME: "encounters.csv"

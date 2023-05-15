@@ -1,0 +1,41 @@
+DISEASE_NAME: ischemic_heart_disease
+DAYS_AFTER: 1825
+DAYS_BEFORE: 0
+CONSIDER_ONLY_FIRST_DIAGNOSIS: True
+PATH: /bmrNAS/scandata/abct_ehr/clinical_data/
+NUM_PATIENTS: 23547
+DATES: 'CT'
+
+TYPES:
+  DIAGNOSES:
+    FILE_NAME: "diagnoses.csv"
+    USE_COLS: ['Patient Id', 'Date', 'ICD10 Code', 'ICD9 Code']
+    ICD10:
+      Hierarchical: True
+      Codes:
+        - I20
+        - I21
+        - I22
+        - I23
+        - I24
+        - I25
+  VITALS: 
+    FILE_NAME: "flowsheets.csv"
+    USE_COLS: ['Patient Id', 'Measure', 'Value', 'Date']
+  LABS: 
+    FILE_NAME: "labs.csv"
+    USE_COLS: ['Patient Id', 'Value', 'Taken Date', 'Result', 'Reference High', 'Reference Low', 'Units']
+  PROCEDURES:
+    FILE_NAME: "procedures.csv"
+    USE_COLS: ['Patient Id', 'Code Type', 'Code', 'Date']
+  MED_ORDERS:
+    FILE_NAME: "med_orders.csv"
+    USE_COLS: ['Patient Id', 'Therapeutic Class', 'Sig', 'Start Date']
+  MED_ADMIN:
+    FILE_NAME: "med_admin.csv"
+  RADIOLOGY_REPORT_META:
+    FILE_NAME: "radiology_report_meta.csv"
+  CLINICAL_NOTE_META:
+    FILE_NAME: "clinical_note_meta.csv"
+  ENCOUNTERS:
+    FILE_NAME: "encounters.csv"

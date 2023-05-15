@@ -1,0 +1,68 @@
+DISEASE_NAME: fragility_fracture
+DAYS_AFTER: 1825
+DAYS_BEFORE: 0
+CONSIDER_ONLY_FIRST_DIAGNOSIS: True
+PATH: /bmrNAS/scandata/abct_ehr/clinical_data/
+NUM_PATIENTS: 23547
+DATES: 'CT'
+
+TYPES:
+  DIAGNOSES:
+    FILE_NAME: "diagnoses.csv"
+    USE_COLS: ['Patient Id', 'Date', 'ICD10 Code', 'ICD9 Code']
+    ICD10:
+      Hierarchical: True
+      Codes:
+        - S32
+        - S52.5
+        - S52.6
+        - S52.7
+        - S52.8
+        - S52.9
+        - S42.2
+        - S30.0
+        - S32
+        - S32.1
+        - S32.3
+        - S32.4
+        - S32.5
+        - S32.7
+        - S32.8
+        - S72.0
+        - S72.1
+        - S72.2
+        - S72.8
+        - S72.9
+        - M80
+        - M80.0
+        - M80.1
+        - M80.2
+        - M80.3
+        - M80.4
+        - M80.5
+        - M80.8
+        - M80.9
+        - M48.4
+        - M48.5
+        - M84.3
+        - M84.4
+  VITALS: 
+    FILE_NAME: "flowsheets.csv"
+    USE_COLS: ['Patient Id', 'Measure', 'Value', 'Date']
+  LABS: 
+    FILE_NAME: "labs.csv"
+    USE_COLS: ['Patient Id', 'Value', 'Taken Date', 'Result', 'Reference High', 'Reference Low', 'Units']
+  PROCEDURES:
+    FILE_NAME: "procedures.csv"
+    USE_COLS: ['Patient Id', 'Code Type', 'Code', 'Date']
+  MED_ORDERS:
+    FILE_NAME: "med_orders.csv"
+    USE_COLS: ['Patient Id', 'Therapeutic Class', 'Sig', 'Start Date']
+  MED_ADMIN:
+    FILE_NAME: "med_admin.csv"
+  RADIOLOGY_REPORT_META:
+    FILE_NAME: "radiology_report_meta.csv"
+  CLINICAL_NOTE_META:
+    FILE_NAME: "clinical_note_meta.csv"
+  ENCOUNTERS:
+    FILE_NAME: "encounters.csv"

@@ -13,6 +13,7 @@ setup(
         "regex",
         "matplotlib",
         "tqdm",
+        "scikit-learn",
     ],
     extras_require={
         "ml": [
