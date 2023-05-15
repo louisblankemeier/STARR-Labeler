@@ -313,9 +313,9 @@ class label_generator:
             f" - days_before): "
             f"{self.diagnosis_dates.loc[self.diagnosis_dates['Label'] == 2]['Patient Id'].nunique()}"
         )
-        print(f"Number of images in class 3 (other): {np.sum(threes)}")
+        print(f"Number of images in class 3 (no diagnosis and insufficient followup): {np.sum(threes)}")
         print(
-            f"Number of patients in class 3 (other): "
+            f"Number of patients in class 3 (no diagnosis and insufficient followup): "
             f"{self.diagnosis_dates.loc[self.diagnosis_dates['Label'] == 3]['Patient Id'].nunique()}"
         )
         print("")
