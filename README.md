@@ -4,6 +4,8 @@
 ```
 git clone https://github.com/louisblankemeier/STARR-Labeler
 cd STARR-Labeler
+conda create --name starr_env
+conda active starr_env
 pip install -e .
 ```
 ## Generating Feature Vectors
