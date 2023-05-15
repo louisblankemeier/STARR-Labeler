@@ -14,6 +14,7 @@ setup(
         "matplotlib",
         "tqdm",
         "scikit-learn",
+        "tabulate",
     ],
     extras_require={
         "ml": [

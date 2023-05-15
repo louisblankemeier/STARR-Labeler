@@ -6,6 +6,7 @@ from typing import Dict
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
+from tabulate import tabulate
 
 from starr_labeler.utils.utils import data_iterator, get_splits, patient_iterator
 
@@ -219,12 +220,14 @@ class label_generator:
         results.to_csv(self.output_folder / "diagnosis_dates.csv", index=False)
         self.diagnosis_dates = results
         print("Done!")
+        print("")
         print("Total Number of Patients: ", results["Patient Id"].nunique())
         print("Total Number of Images: ", results["Accession Number"].nunique())
         print(
             "Total Number of Positive Patients: ",
             results.loc[~results["Diagnosis Date"].isna(), "Patient Id"].nunique(),
         )
+        print("")
 
     def compute_diagnosis_labels(self):
         """Compute labels for patients receiving a diagnosis within a time horizon around an imaging exam.
@@ -315,6 +318,17 @@ class label_generator:
             f"Number of patients in class 3 (other): "
             f"{self.diagnosis_dates.loc[self.diagnosis_dates['Label'] == 3]['Patient Id'].nunique()}"
         )
+        print("")
+
+        table = [
+            ["Class", "Number of Images", "Number of Patients"],
+            ["0", np.sum(zeros), self.diagnosis_dates.loc[self.diagnosis_dates['Label'] == 0]['Patient Id'].nunique()],
+            ["1", np.sum(ones), self.diagnosis_dates.loc[self.diagnosis_dates['Label'] == 1]['Patient Id'].nunique()],
+            ["2", np.sum(twos), self.diagnosis_dates.loc[self.diagnosis_dates['Label'] == 2]['Patient Id'].nunique()],
+            ["3", np.sum(threes), self.diagnosis_dates.loc[self.diagnosis_dates['Label'] == 3]['Patient Id'].nunique()]
+        ]
+
+        print(tabulate(table, headers="firstrow"))
 
     def imaging_dates(self, dates):
         """Get imaging dates."""
