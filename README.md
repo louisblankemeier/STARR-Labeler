@@ -1,4 +1,4 @@
-# Code for processing STARR data from Stanford Hospital
+# Code for processing STARR electronic health record data
 
 ## Installation
 ```
