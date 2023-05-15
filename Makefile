@@ -1,12 +1,10 @@
 autoformat:
 	set -e
-	isort .
 	black --config pyproject.toml .
 	flake8
 
 lint:
 	set -e
-	isort -c .
 	black --check --config pyproject.toml .
 	flake8
 
