@@ -6,7 +6,7 @@
 ```
 git clone https://github.com/louisblankemeier/STARR-Labeler
 cd STARR-Labeler
-conda create --name starr_env
+conda create --name starr_env python=3.9
 conda active starr_env
 pip install -e .
 ```
