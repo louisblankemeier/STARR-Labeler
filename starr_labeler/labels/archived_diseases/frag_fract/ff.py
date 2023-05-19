@@ -25,7 +25,9 @@ if __name__ == "__main__":
     ost_class = ost_labels(cfg, "labels_ost_frac_vert.csv")
 
     for code0 in [
-        "S32",
+        "S22.0",
+        "S22.1",
+        "S32.0",
         "S52.5",
         "S52.6",
         "S52.7",
