@@ -17,7 +17,9 @@ TYPES:
     ICD10:
       Hierarchical: True
       Codes:
-        - S32
+        - S22.0
+        - S22.1
+        - S32.0
         - S52.5
         - S52.6
         - S52.7
