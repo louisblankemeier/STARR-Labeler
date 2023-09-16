@@ -28,8 +28,8 @@ def process_all_types(cfg):
                 )
             else:
                 module = __import__(
-                    f"starr_labeler.features.ehr_types.{feature_type.lower()}.extract_{feature_type.lower()}",
-                    fromlist=[f"extract_{feature_type.lower()}"],
+                    f"starr_labeler.features.ehr_types.{feature_type.lower()}",
+                    fromlist=[f"{feature_type.lower()}"],
                 )
                 extract_class = getattr(module, f"extract_{feature_type.lower()}")
                 extract_instance = extract_class(
