@@ -1,6 +1,6 @@
 import pandas as pd
 
-from starr_labeler.features.extract_features import extract_base
+from starr_labeler.features.extract_features.extract import extract_base
 
 
 class extract_vitals(extract_base):
@@ -8,8 +8,12 @@ class extract_vitals(extract_base):
         super().__init__(config, file_name, feature_type)
 
     def process_data(self, pat_data):
-        vitals_regex = "|".join(list(self.cfg["FEATURES"]["TYPES"]["VITALS"]["INCLUDE"].keys()))
-        pat_data = pat_data[pat_data["Measure"].str.fullmatch(vitals_regex, case=False, na=False)]
+        vitals_regex = "|".join(
+            list(self.cfg["FEATURES"]["TYPES"]["VITALS"]["INCLUDE"].keys())
+        )
+        pat_data = pat_data[
+            pat_data["Measure"].str.fullmatch(vitals_regex, case=False, na=False)
+        ]
         pat_data = pat_data[["Patient Id", "Measure", "Value", "Date"]]
         pat_data.columns = ["Patient Id", "Type", "Value", "Event_dt"]
 
@@ -19,18 +23,26 @@ class extract_vitals(extract_base):
         return pat_data
 
     def truncate_data(self, pat_data):
-        vitals_regex = "|".join(list(self.cfg["FEATURES"]["TYPES"]["VITALS"]["INCLUDE"].keys()))
+        vitals_regex = "|".join(
+            list(self.cfg["FEATURES"]["TYPES"]["VITALS"]["INCLUDE"].keys())
+        )
         pat_data = pat_data[
-            pat_data["Measure"].str.contains(vitals_regex, regex=True, case=False, na=False)
+            pat_data["Measure"].str.contains(
+                vitals_regex, regex=True, case=False, na=False
+            )
         ]
         pat_data = pat_data[["Patient Id", "Measure", "Value", "Date"]]
         pat_data.loc[:, "Measure"].loc[pat_data["Measure"] == "BP"] = "SBP/DBP"
         to_explode = pat_data.loc[pat_data["Measure"] == "SBP/DBP"]
         to_explode.loc[to_explode["Measure"] == "SBP/DBP", "Value"] = pd.DataFrame(
-            to_explode.loc[to_explode["Measure"] == "SBP/DBP", "Value"].str.split("/", expand=False)
+            to_explode.loc[to_explode["Measure"] == "SBP/DBP", "Value"].str.split(
+                "/", expand=False
+            )
         )
         to_explode.loc[to_explode["Measure"] == "SBP/DBP", "Date"] = pd.DataFrame(
-            to_explode.loc[to_explode["Measure"] == "SBP/DBP", "Date"].apply(lambda x: [x, x])
+            to_explode.loc[to_explode["Measure"] == "SBP/DBP", "Date"].apply(
+                lambda x: [x, x]
+            )
         )
         to_explode.loc[to_explode["Measure"] == "SBP/DBP", "Measure"] = pd.DataFrame(
             to_explode.loc[to_explode["Measure"] == "SBP/DBP", "Measure"].str.split(

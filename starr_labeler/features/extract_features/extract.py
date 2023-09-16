@@ -4,7 +4,7 @@ from pathlib import Path
 import pandas as pd
 from tqdm import tqdm
 
-from starr_labeler.utils import data_iterator, patient_iterator
+from starr_labeler.utils.utils import data_iterator, patient_iterator
 
 pd.options.mode.chained_assignment = None
 
@@ -17,18 +17,24 @@ class extract_base:
 
         self.features = self.cfg["FEATURES"]
         self.features_path = self.features["PATH"]
-        self.bin_duration = self.features["TYPES"][self.feature_type.upper()]["BIN_DURATION"]
+        self.bin_duration = self.features["TYPES"][self.feature_type.upper()][
+            "BIN_DURATION"
+        ]
         self.bins = self.features["TYPES"][self.feature_type.upper()]["BINS"]
         self.lag_after_dates = self.features["LAG_AFTER_DATES"]
         self.dates = self.features["DATES"]
         self.num_patients = self.features["NUM_PATIENTS"]
         self.aggregate = self.features["TYPES"][self.feature_type.upper()]["AGGREGATE"]
         if "USE_COLS" in self.features["TYPES"][self.feature_type.upper()]:
-            self.use_cols = self.features["TYPES"][self.feature_type.upper()]["USE_COLS"]
+            self.use_cols = self.features["TYPES"][self.feature_type.upper()][
+                "USE_COLS"
+            ]
         else:
             self.use_cols = None
 
-        self.pat_iter_class = patient_iterator(self.features_path, self.file, self.use_cols)
+        self.pat_iter_class = patient_iterator(
+            self.features_path, self.file, self.use_cols
+        )
         self.data_path = os.path.join(self.features_path, file_name)
         self.pat_iter = iter(self.pat_iter_class)
 
@@ -48,13 +54,18 @@ class extract_base:
         cross_walk_data = pd.DataFrame(
             pd.read_csv(
                 os.path.join(
-                    str(Path(self.cfg["FEATURES"]["PATH"]).parent), "priority_crosswalk_all.csv"
+                    str(Path(self.cfg["FEATURES"]["PATH"]).parent),
+                    "priority_crosswalk_all.csv",
                 )
             )["accession"]
         )
         cross_walk_data.columns = ["Accession Number"]
-        cross_walk_data["Accession Number"] = cross_walk_data["Accession Number"].astype(str)
-        imaging_df = cross_walk_data.merge(imaging_df, how="inner", on=["Accession Number"])
+        cross_walk_data["Accession Number"] = cross_walk_data[
+            "Accession Number"
+        ].astype(str)
+        imaging_df = cross_walk_data.merge(
+            imaging_df, how="inner", on=["Accession Number"]
+        )
         return imaging_df
 
     def pivot(self, merged):
@@ -65,7 +76,11 @@ class extract_base:
         if self.aggregate == "pce":
             input_features = input_features.groupby(
                 ["Patient Id", "Accession Number", "Type", "Period"]
-            ).apply(lambda x: pd.DataFrame(x.sort_values(["Event_dt"])["Value"]).head(1).mean())
+            ).apply(
+                lambda x: pd.DataFrame(x.sort_values(["Event_dt"])["Value"])
+                .head(1)
+                .mean()
+            )
             input_features.columns = ["Value"]
 
         else:
@@ -88,7 +103,9 @@ class extract_base:
         input_features = input_features.reset_index()[
             ["Patient Id", "Accession Number", "Type", "Period", "Value"]
         ]
-        input_features.loc[:, "Type"] = input_features["Type"] + "_" + input_features["Period"]
+        input_features.loc[:, "Type"] = (
+            input_features["Type"] + "_" + input_features["Period"]
+        )
         input_features = input_features.drop(columns="Period")
         input_features = pd.pivot_table(
             input_features, "Value", ["Patient Id", "Accession Number"], "Type"
@@ -104,9 +121,14 @@ class extract_base:
         lab_features = []
         t = tqdm(total=self.num_patients)
 
+        first_call = True
         for pat_data in self.pat_iter:
             num_patients_processed = len(pat_data["Patient Id"].unique())
-            pat_data = self.process_data(pat_data)
+            if self.feature_type == "DEMOGRAPHICS":
+                pat_data = self.process_data(pat_data, first_call)
+                first_call = False
+            else:
+                pat_data = self.process_data(pat_data)
             merged = pat_data.merge(imaging_df, on="Patient Id")
             if merged.empty:
                 continue
@@ -117,11 +139,20 @@ class extract_base:
                 merged.loc[:, "Event_dt"] = pd.to_datetime(
                     merged.loc[:, "Event_dt"], format="%m/%d/%Y %H:%M", utc=True
                 )
-                merged.loc[:, "Value"] = pd.to_numeric(merged.loc[:, "Value"], errors="coerce")
+                merged.loc[:, "Value"] = pd.to_numeric(
+                    merged.loc[:, "Value"], errors="coerce"
+                )
                 merged = merged.loc[~pd.isna(merged.Event_dt)]
 
                 merged = merged[
-                    ["Patient Id", "Accession Number", "Type", "Value", "Event_dt", "Imaging_dt"]
+                    [
+                        "Patient Id",
+                        "Accession Number",
+                        "Type",
+                        "Value",
+                        "Event_dt",
+                        "Imaging_dt",
+                    ]
                 ]
                 input_features = self.pivot(merged)
                 lab_features.append(input_features)
@@ -160,9 +191,12 @@ class extract_base:
 
         if "Date of Birth" in lab_input_features:
             lab_input_features.loc[:, "Age"] = (
-                lab_input_features.loc[:, "Imaging_dt"] - lab_input_features.loc[:, "Date of Birth"]
+                lab_input_features.loc[:, "Imaging_dt"]
+                - lab_input_features.loc[:, "Date of Birth"]
             ).dt.days / 365.0
-            lab_input_features = lab_input_features.drop(columns=["Imaging_dt", "Date of Birth"])
+            lab_input_features = lab_input_features.drop(
+                columns=["Imaging_dt", "Date of Birth"]
+            )
 
         if self.cfg["FEATURES"]["TYPES"][self.feature_type.upper()]["SAVE"]:
             if not os.path.isdir(self.cfg["FEATURES"]["SAVE_DIR"]):

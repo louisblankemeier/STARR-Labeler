@@ -1,6 +1,6 @@
 import pandas as pd
 
-from starr_labeler.features.extract_features import extract_base
+from starr_labeler.features.extract_features.extract import extract_base
 
 
 class extract_diagnoses(extract_base):
@@ -17,7 +17,9 @@ class extract_diagnoses(extract_base):
                 list(self.cfg["FEATURES"]["TYPES"]["DIAGNOSES"]["INCLUDE"].keys())
             )
             pat_data = pat_data.loc[
-                pat_data[diagnoses_type].str.match(diagnoses_regex, case=False, na=False)
+                pat_data[diagnoses_type].str.match(
+                    diagnoses_regex, case=False, na=False
+                )
             ]
 
         pat_data = pat_data.loc[~pd.isna(pat_data.loc[:, diagnoses_type])]
@@ -31,7 +33,9 @@ class extract_diagnoses(extract_base):
         if not pat_data.empty:
             pat_data.loc[:, "Value"] = 1
         else:
-            pat_data = pd.DataFrame(columns=["Patient Id", diagnoses_type, "Date", "Value"])
+            pat_data = pd.DataFrame(
+                columns=["Patient Id", diagnoses_type, "Date", "Value"]
+            )
         pat_data = pat_data[["Patient Id", diagnoses_type, "Value", "Date"]]
         pat_data.columns = ["Patient Id", "Type", "Value", "Event_dt"]
         return pat_data

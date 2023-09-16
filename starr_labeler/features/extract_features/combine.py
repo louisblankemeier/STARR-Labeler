@@ -4,7 +4,7 @@ import sys
 
 import pandas as pd
 
-from starr_labeler.utils import merge_dfms
+from starr_labeler.utils.utils import merge_dfms
 
 
 def process_all_types(cfg):
@@ -22,21 +22,28 @@ def process_all_types(cfg):
                 )
                 extracted_features = pd.read_csv(
                     os.path.join(
-                        cfg_section["PATH"], cfg_section["TYPES"][feature_type]["FILE_NAME"]
+                        cfg_section["PATH"],
+                        cfg_section["TYPES"][feature_type]["FILE_NAME"],
                     )
                 )
             else:
-                extract_class = getattr(sys.modules[__name__], f"extract_{feature_type.lower()}")
+                module = __import__(
+                    f"starr_labeler.features.ehr_types.{feature_type.lower()}.extract_{feature_type.lower()}",
+                    fromlist=[f"extract_{feature_type.lower()}"],
+                )
+                extract_class = getattr(module, f"extract_{feature_type.lower()}")
                 extract_instance = extract_class(
                     cfg, cfg_section["TYPES"][feature_type]["FILE_NAME"], feature_type
                 )
                 extracted_features = extract_instance.process_type(
                     fillna=cfg_section["TYPES"][feature_type]["FILL_NA"]
                 )
-            extracted_features["Patient Id"] = extracted_features["Patient Id"].astype(str)
-            extracted_features["Accession Number"] = extracted_features["Accession Number"].astype(
+            extracted_features["Patient Id"] = extracted_features["Patient Id"].astype(
                 str
             )
+            extracted_features["Accession Number"] = extracted_features[
+                "Accession Number"
+            ].astype(str)
             features.append(extracted_features)
     print("Now combining the EHR types into a single input.")
     input_features = merge_dfms(features)
@@ -45,7 +52,9 @@ def process_all_types(cfg):
         regex.sub("_", col) if any(x in str(col) for x in {"[", "]", "<"}) else col
         for col in set(input_features.columns.values)
     ]
-    input_features.to_csv(os.path.join(cfg["FEATURES"]["SAVE_DIR"], "inputs.csv"), index=False)
+    input_features.to_csv(
+        os.path.join(cfg["FEATURES"]["SAVE_DIR"], "inputs.csv"), index=False
+    )
     return input_features
 
 

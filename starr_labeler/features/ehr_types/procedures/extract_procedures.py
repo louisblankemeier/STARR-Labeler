@@ -5,7 +5,7 @@ import os
 
 import pandas as pd
 
-from starr_labeler.features.extract_features import extract_base
+from starr_labeler.features.extract_features.extract import extract_base
 
 
 def read_csv_dict(file_name):
@@ -15,14 +15,18 @@ def read_csv_dict(file_name):
         lambda x: list(range(int(x["lower"]), int(x["upper"]) + 1)), 1
     )
     cpt_mapping = cpt_mapping[["range", "mapping"]].explode("range")
-    cpt_mapping_dict = pd.Series(cpt_mapping.mapping.values, index=cpt_mapping.range).to_dict()
+    cpt_mapping_dict = pd.Series(
+        cpt_mapping.mapping.values, index=cpt_mapping.range
+    ).to_dict()
     return cpt_mapping_dict
 
 
 def map_numeric(procedures_num, file_path):
     cpt_mapping_dict = read_csv_dict(os.path.join(file_path, "cpt_mapping.csv"))
     procedures_num = procedures_num.assign(
-        mapping=pd.to_numeric(procedures_num.loc[:, "Code"], "coerce").map(cpt_mapping_dict)
+        mapping=pd.to_numeric(procedures_num.loc[:, "Code"], "coerce").map(
+            cpt_mapping_dict
+        )
     )
     procedures_num = procedures_num.dropna(subset=["mapping"])
     return procedures_num
@@ -31,7 +35,9 @@ def map_numeric(procedures_num, file_path):
 def map_alpha(procedures_alpha, file_path):
     procedures_F = procedures_alpha[procedures_alpha["Code"].str.contains("[Ff]")]
     procedures_T = procedures_alpha[procedures_alpha["Code"].str.contains("[Tt]")]
-    procedures_other = procedures_alpha[~procedures_alpha["Code"].str.contains("[FfTt]")]
+    procedures_other = procedures_alpha[
+        ~procedures_alpha["Code"].str.contains("[FfTt]")
+    ]
     procedures_F.loc[:, "Code"] = procedures_F["Code"].str.strip("F")
     cpt_mapping_F_dict = read_csv_dict(os.path.join(file_path, "cpt_mapping_F.csv"))
     procedures_F = procedures_F.assign(

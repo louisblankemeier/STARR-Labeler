@@ -1,6 +1,6 @@
 FEATURES:
   PATH: /bmrNAS/scandata/abct_ehr/clinical_data/
-  SAVE_DIR: /dataNAS/people/lblankem/STARR-Labeler/starr_labeler/features/results
+  SAVE_DIR: /dataNAS/people/lblankem/starr_labeler_testing/STARR-Labeler/starr_labeler/results
   NUM_PATIENTS: 23547
   DATES: 'CT'
   LAG_AFTER_DATES: 14

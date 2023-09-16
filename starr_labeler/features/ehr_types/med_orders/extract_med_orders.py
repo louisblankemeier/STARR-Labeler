@@ -1,4 +1,4 @@
-from starr_labeler.features.extract_features import extract_base
+from starr_labeler.features.extract_features.extract import extract_base
 
 
 class extract_med_orders(extract_base):
