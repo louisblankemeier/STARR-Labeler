@@ -36,14 +36,20 @@ class ExtractDemographics(ExtractBase):
             original_categories_gender = pat_data.loc[:, "Gender"].astype("category")
             pat_data.loc[:, "Gender"] = original_categories_gender.cat.codes
             if first_call:
-                gender_mapping = dict(enumerate(original_categories_gender.cat.categories))
+                gender_mapping = dict(
+                    enumerate(original_categories_gender.cat.categories)
+                )
                 print("Gender mappings:", gender_mapping)
 
         if "Ethnicity" in pat_data.columns:
-            original_categories_ethnicity = pat_data.loc[:, "Ethnicity"].astype("category")
+            original_categories_ethnicity = pat_data.loc[:, "Ethnicity"].astype(
+                "category"
+            )
             pat_data.loc[:, "Ethnicity"] = original_categories_ethnicity.cat.codes
             if first_call:
-                ethnicity_mapping = dict(enumerate(original_categories_ethnicity.cat.categories))
+                ethnicity_mapping = dict(
+                    enumerate(original_categories_ethnicity.cat.categories)
+                )
                 print("Ethnicity mappings:", ethnicity_mapping)
 
         return pat_data
