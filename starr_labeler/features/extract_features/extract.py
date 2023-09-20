@@ -28,15 +28,11 @@ class ExtractBase:
             "AGGREGATE_ACROSS_TIME"
         ]
         if "USE_COLS" in self.features["EHR_TYPES"][self.feature_type.upper()]:
-            self.use_cols = self.features["EHR_TYPES"][self.feature_type.upper()][
-                "USE_COLS"
-            ]
+            self.use_cols = self.features["EHR_TYPES"][self.feature_type.upper()]["USE_COLS"]
         else:
             self.use_cols = None
 
-        self.pat_iter_class = patient_iterator(
-            self.features_path, self.file, self.use_cols
-        )
+        self.pat_iter_class = patient_iterator(self.features_path, self.file, self.use_cols)
         self.data_path = os.path.join(self.features_path, file_name)
         self.pat_iter = iter(self.pat_iter_class)
 
@@ -62,12 +58,8 @@ class ExtractBase:
             )["accession"]
         )
         cross_walk_data.columns = ["Accession Number"]
-        cross_walk_data["Accession Number"] = cross_walk_data[
-            "Accession Number"
-        ].astype(str)
-        imaging_df = cross_walk_data.merge(
-            imaging_df, how="inner", on=["Accession Number"]
-        )
+        cross_walk_data["Accession Number"] = cross_walk_data["Accession Number"].astype(str)
+        imaging_df = cross_walk_data.merge(imaging_df, how="inner", on=["Accession Number"])
         return imaging_df
 
     def pivot(self, merged):
@@ -78,11 +70,7 @@ class ExtractBase:
         if self.aggregate == "pce":
             input_features = input_features.groupby(
                 ["Patient Id", "Accession Number", "Type", "Period"]
-            ).apply(
-                lambda x: pd.DataFrame(x.sort_values(["Event_dt"])["Value"])
-                .head(1)
-                .mean()
-            )
+            ).apply(lambda x: pd.DataFrame(x.sort_values(["Event_dt"])["Value"]).head(1).mean())
             input_features.columns = ["Value"]
 
         else:
@@ -105,9 +93,7 @@ class ExtractBase:
         input_features = input_features.reset_index()[
             ["Patient Id", "Accession Number", "Type", "Period", "Value"]
         ]
-        input_features.loc[:, "Type"] = (
-            input_features["Type"] + "_" + input_features["Period"]
-        )
+        input_features.loc[:, "Type"] = input_features["Type"] + "_" + input_features["Period"]
         input_features = input_features.drop(columns="Period")
         input_features = pd.pivot_table(
             input_features, "Value", ["Patient Id", "Accession Number"], "Type"
@@ -141,9 +127,7 @@ class ExtractBase:
                 merged.loc[:, "Event_dt"] = pd.to_datetime(
                     merged.loc[:, "Event_dt"], format="%m/%d/%Y %H:%M", utc=True
                 )
-                merged.loc[:, "Value"] = pd.to_numeric(
-                    merged.loc[:, "Value"], errors="coerce"
-                )
+                merged.loc[:, "Value"] = pd.to_numeric(merged.loc[:, "Value"], errors="coerce")
                 merged = merged.loc[~pd.isna(merged.Event_dt)]
 
                 merged = merged[
@@ -193,19 +177,14 @@ class ExtractBase:
 
         if "Date of Birth" in lab_input_features:
             lab_input_features.loc[:, "Age"] = (
-                lab_input_features.loc[:, "Imaging_dt"]
-                - lab_input_features.loc[:, "Date of Birth"]
+                lab_input_features.loc[:, "Imaging_dt"] - lab_input_features.loc[:, "Date of Birth"]
             ).dt.days / 365.0
-            lab_input_features = lab_input_features.drop(
-                columns=["Imaging_dt", "Date of Birth"]
-            )
+            lab_input_features = lab_input_features.drop(columns=["Imaging_dt", "Date of Birth"])
 
         if self.cfg["EHR_TYPES"][self.feature_type.upper()]["SAVE"]:
             if not os.path.isdir(self.cfg["SAVE_DIR"]):
                 os.makedirs(self.cfg["SAVE_DIR"])
-            lab_input_features.to_csv(
-                os.path.join(self.cfg["SAVE_DIR"], self.file), index=False
-            )
+            lab_input_features.to_csv(os.path.join(self.cfg["SAVE_DIR"], self.file), index=False)
 
         print(f"Finished computing features from {self.data_path}.\n")
         return lab_input_features

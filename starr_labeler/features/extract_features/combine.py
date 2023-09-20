@@ -1,6 +1,5 @@
 import os
 import re
-import sys
 
 import pandas as pd
 
@@ -44,12 +43,10 @@ def process_all_types(cfg):
                 extracted_features = extract_instance.process_type(
                     fillna=cfg_section["EHR_TYPES"][feature_type]["FILL_NA"]
                 )
-            extracted_features["Patient Id"] = extracted_features["Patient Id"].astype(
+            extracted_features["Patient Id"] = extracted_features["Patient Id"].astype(str)
+            extracted_features["Accession Number"] = extracted_features["Accession Number"].astype(
                 str
             )
-            extracted_features["Accession Number"] = extracted_features[
-                "Accession Number"
-            ].astype(str)
             features.append(extracted_features)
     print("Now combining the EHR types into a single input.")
     input_features = merge_dfms(features)

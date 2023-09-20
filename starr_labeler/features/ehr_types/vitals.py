@@ -11,9 +11,7 @@ class ExtractVitals(ExtractBase):
         vitals_regex = "|".join(
             list(self.cfg["EHR_TYPES"]["VITALS"]["REGEX_TO_FEATURE_NAME"].keys())
         )
-        pat_data = pat_data[
-            pat_data["Measure"].str.fullmatch(vitals_regex, case=False, na=False)
-        ]
+        pat_data = pat_data[pat_data["Measure"].str.fullmatch(vitals_regex, case=False, na=False)]
         pat_data = pat_data[["Patient Id", "Measure", "Value", "Date"]]
         pat_data.columns = ["Patient Id", "Type", "Value", "Event_dt"]
 
@@ -27,22 +25,16 @@ class ExtractVitals(ExtractBase):
             list(self.cfg["EHR_TYPES"]["VITALS"]["REGEX_TO_FEATURE_NAME"].keys())
         )
         pat_data = pat_data[
-            pat_data["Measure"].str.contains(
-                vitals_regex, regex=True, case=False, na=False
-            )
+            pat_data["Measure"].str.contains(vitals_regex, regex=True, case=False, na=False)
         ]
         pat_data = pat_data[["Patient Id", "Measure", "Value", "Date"]]
         pat_data.loc[:, "Measure"].loc[pat_data["Measure"] == "BP"] = "SBP/DBP"
         to_explode = pat_data.loc[pat_data["Measure"] == "SBP/DBP"]
         to_explode.loc[to_explode["Measure"] == "SBP/DBP", "Value"] = pd.DataFrame(
-            to_explode.loc[to_explode["Measure"] == "SBP/DBP", "Value"].str.split(
-                "/", expand=False
-            )
+            to_explode.loc[to_explode["Measure"] == "SBP/DBP", "Value"].str.split("/", expand=False)
         )
         to_explode.loc[to_explode["Measure"] == "SBP/DBP", "Date"] = pd.DataFrame(
-            to_explode.loc[to_explode["Measure"] == "SBP/DBP", "Date"].apply(
-                lambda x: [x, x]
-            )
+            to_explode.loc[to_explode["Measure"] == "SBP/DBP", "Date"].apply(lambda x: [x, x])
         )
         to_explode.loc[to_explode["Measure"] == "SBP/DBP", "Measure"] = pd.DataFrame(
             to_explode.loc[to_explode["Measure"] == "SBP/DBP", "Measure"].str.split(

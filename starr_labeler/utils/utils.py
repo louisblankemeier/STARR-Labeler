@@ -6,9 +6,7 @@ import pandas as pd
 from sklearn.model_selection import GroupKFold
 
 
-def frequency_by_num_patients(
-    iterator, measure_type, plt_path=None, plt_num=30, fig_size=10
-):
+def frequency_by_num_patients(iterator, measure_type, plt_path=None, plt_num=30, fig_size=10):
     first = True
     for chunk in iterator:
         chunk_occ = pd.DataFrame(chunk.groupby(["Patient Id", measure_type]).head(1))
@@ -17,9 +15,7 @@ def frequency_by_num_patients(
             freqs = chunk_occ
             first = False
         else:
-            freqs = freqs.merge(
-                chunk_occ, how="outer", left_index=True, right_index=True
-            )
+            freqs = freqs.merge(chunk_occ, how="outer", left_index=True, right_index=True)
             freqs = freqs.fillna(0)
             freqs["NumPatients"] = freqs.sum(axis=1)
             freqs = pd.DataFrame(freqs.loc[freqs.NumPatients > 1, "NumPatients"])
@@ -141,13 +137,9 @@ class patient_iterator:
         reserve_chunk = self.curr_data_chunk.loc[
             self.curr_data_chunk["Patient Id"] == self.unique_ids[-1]
         ]
-        to_return = self.curr_data_chunk[
-            self.curr_data_chunk["Patient Id"] != self.unique_ids[-1]
-        ]
+        to_return = self.curr_data_chunk[self.curr_data_chunk["Patient Id"] != self.unique_ids[-1]]
         try:
-            self.curr_data_chunk = pd.concat(
-                [reserve_chunk, next(self.my_data_iterator)]
-            )
+            self.curr_data_chunk = pd.concat([reserve_chunk, next(self.my_data_iterator)])
         except BaseException:
             self.stop = True
             to_return = pd.concat([to_return, reserve_chunk])
@@ -176,17 +168,13 @@ class one_patient_iterator:
     def __next__(self):
         pt_id = self.unique_ids[self.patient_idx]
         if self.patient_idx == self.unique_ids.shape[0] - 1:
-            reserve_chunk = self.curr_data_chunk.loc[
-                self.curr_data_chunk["Patient Id"] == pt_id
-            ]
+            reserve_chunk = self.curr_data_chunk.loc[self.curr_data_chunk["Patient Id"] == pt_id]
             self.curr_data_chunk = next(self.my_data_iterator)
             self.curr_data_chunk = pd.concat([reserve_chunk, self.curr_data_chunk])
             self.unique_ids = self.curr_data_chunk.loc[:, "Patient Id"].unique()
             self.patient_idx = 0
             pt_id = self.unique_ids[self.patient_idx]
-        to_return = self.curr_data_chunk.loc[
-            self.curr_data_chunk["Patient Id"] == pt_id
-        ]
+        to_return = self.curr_data_chunk.loc[self.curr_data_chunk["Patient Id"] == pt_id]
         self.patient_idx += 1
         return to_return
 

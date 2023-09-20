@@ -1,7 +1,3 @@
-import os
-import sys
-from glob import glob
-from pathlib import Path
 
 from starr_labeler.labels.extract_labels import *
 
