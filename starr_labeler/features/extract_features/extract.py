@@ -15,18 +15,18 @@ class extract_base:
         self.file = file_name
         self.feature_type = feature_type
 
-        self.features = self.cfg["FEATURES"]
-        self.features_path = self.features["PATH"]
-        self.bin_duration = self.features["TYPES"][self.feature_type.upper()][
-            "BIN_DURATION"
+        self.features = self.cfg
+        self.features_path = self.features["DATA_PATH"]
+        self.bin_duration = self.features["EHR_TYPES"][self.feature_type.upper()][
+            "TIME_BIN_DURATION"
         ]
-        self.bins = self.features["TYPES"][self.feature_type.upper()]["BINS"]
-        self.lag_after_dates = self.features["LAG_AFTER_DATES"]
-        self.dates = self.features["DATES"]
+        self.bins = self.features["EHR_TYPES"][self.feature_type.upper()]["TIME_BINS"]
+        self.lag_after_dates = self.features["DAYS_AFTER_PREDICTION_DATES"]
+        self.dates = self.features["PREDICTION_DATES"]
         self.num_patients = self.features["NUM_PATIENTS"]
-        self.aggregate = self.features["TYPES"][self.feature_type.upper()]["AGGREGATE"]
-        if "USE_COLS" in self.features["TYPES"][self.feature_type.upper()]:
-            self.use_cols = self.features["TYPES"][self.feature_type.upper()][
+        self.aggregate = self.features["EHR_TYPES"][self.feature_type.upper()]["AGGREGATE_ACROSS_TIME"]
+        if "USE_COLS" in self.features["EHR_TYPES"][self.feature_type.upper()]:
+            self.use_cols = self.features["EHR_TYPES"][self.feature_type.upper()][
                 "USE_COLS"
             ]
         else:
@@ -54,7 +54,7 @@ class extract_base:
         cross_walk_data = pd.DataFrame(
             pd.read_csv(
                 os.path.join(
-                    str(Path(self.cfg["FEATURES"]["PATH"]).parent),
+                    str(Path(self.cfg["DATA_PATH"]).parent),
                     "priority_crosswalk_all.csv",
                 )
             )["accession"]
@@ -198,14 +198,15 @@ class extract_base:
                 columns=["Imaging_dt", "Date of Birth"]
             )
 
-        if self.cfg["FEATURES"]["TYPES"][self.feature_type.upper()]["SAVE"]:
-            if not os.path.isdir(self.cfg["FEATURES"]["SAVE_DIR"]):
-                os.makedirs(self.cfg["FEATURES"]["SAVE_DIR"])
+        if self.cfg["EHR_TYPES"][self.feature_type.upper()]["SAVE"]:
+            if not os.path.isdir(self.cfg["SAVE_DIR"]):
+                os.makedirs(self.cfg["SAVE_DIR"])
             lab_input_features.to_csv(
-                os.path.join(self.cfg["FEATURES"]["SAVE_DIR"], self.file), index=False
+                os.path.join(self.cfg["SAVE_DIR"], self.file), index=False
             )
 
-            return lab_input_features
+        print(f"Finished computing features from {self.data_path}.\n")
+        return lab_input_features
 
     def process_data(self):
         pass

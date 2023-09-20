@@ -62,8 +62,8 @@ class extract_procedures(extract_base):
             ~pat_data["Code"].str.contains("[A-Za-z, ,.]")
         ]  # louis added period
         pat_data_alpha = pat_data[pat_data["Code"].str.contains("[A-Za-z, ]")]
-        pat_data_num = map_numeric(pat_data_num, self.cfg["FEATURES"]["SAVE_DIR"])
-        pat_data_alpha = map_alpha(pat_data_alpha, self.cfg["FEATURES"]["SAVE_DIR"])
+        pat_data_num = map_numeric(pat_data_num, self.cfg["SAVE_DIR"])
+        pat_data_alpha = map_alpha(pat_data_alpha, self.cfg["SAVE_DIR"])
         pat_data = pd.concat([pat_data_num, pat_data_alpha])
         # pat_data.loc[:, 'Date'] = pd.to_datetime(pat_data['Date'], format='%m/%d/%Y %H:%M', utc=True)
         # pat_data.loc[:, 'Date'] = pd.to_datetime(pat_data['Date'], utc=True)

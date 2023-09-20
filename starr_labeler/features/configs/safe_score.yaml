@@ -1,113 +1,112 @@
-FEATURES:
-  PATH: /bmrNAS/scandata/abct_ehr/clinical_data/
-  SAVE_DIR: /dataNAS/people/lblankem/STARR-Labeler/starr_labeler/features/results
-  NUM_PATIENTS: 23547
-  DATES: 'CT'
-  LAG_AFTER_DATES: 14
-  TYPES:
-    DEMOGRAPHICS:
-      USE: True
-      FILE_NAME: "demographics.csv"
-      USE_COLS: ['Patient Id', 'Gender', 'Race', 'Ethnicity', 'Date of Birth', 'Recent BMI']
-      INCLUDE: {'Date of Birth': None, 'Recent BMI': None} # Date of Birth here gets converted to age.
-      BINS: 1
-      BIN_DURATION: 1 #in years
-      AGGREGATE: 'mean'
-      FILL_NA: 'median'
-      SAVE: True
-      LOAD: False # whether to load from
-    VITALS:
-      USE: False
-      FILE_NAME: "flowsheets.csv"
-      USE_COLS: ['Patient Id', 'Measure', 'Value', 'Date']
-      TYPE: 'Measure'
-      VALUE: 'Value'
-      INCLUDE: {'DBP': None, 'SBP': None, 'BP': None, 'Pulse': None, 'Temp': None, ' Weight': None, 'SpO2': None, 'Resp': None, 'Mean Arterial Pressure \(Calculated\)': None, 'BSA \(Calculated - sq m\)': None, ' Height': None, ' Fall Within Last 6 Months': None}
-      BINS: 1
-      BIN_DURATION: 1
-      AGGREGATE: 'mean'
-      FILL_NA: 'median'
-      SAVE: True
-      LOAD: False
-    LABS:
-      USE: True
-      FILE_NAME: "labs.csv"
-      USE_COLS: ['Patient Id', 'Value', 'Taken Date', 'Result', 'Reference High', 'Reference Low', 'Units']
-      TYPE: 'Result'
-      Value: 'Value'
-      INCLUDE: {'Platelet count': None, 'ALT \(SGPT\), Ser/Plas': None, 'AST \(SGOT\), Ser/Plas': None, 'Globulin': None}
-      BINS: 1
-      BIN_DURATION: 1
-      AGGREGATE: 'mean'
-      FILL_NA: 'median'
-      SAVE: True
-      LOAD: False
-    DIAGNOSES:
-      USE: True
-      FILE_NAME: "diagnoses.csv"
-      USE_COLS: ['Patient Id', 'Date', 'ICD10 Code']
-      TYPE: 'ICD10 Code'
-      NUM_ICD_CHARS: 3
-      INCLUDE: {"E08": None, "E09": None, "E10": None, "E11": None, "E13": None}
-      BINS: 1
-      BIN_DURATION: 1
-      AGGREGATE: 'sum'
-      FILL_NA: '0'
-      SAVE: True
-      LOAD: False
-    PROCEDURES:
-      USE: False
-      FILE_NAME: "procedures.csv"
-      USE_COLS: ['Patient Id', 'Code Type', 'Code', 'Date']
-      TYPE: 'Code'
-      BINS: 1
-      BIN_DURATION: 1 #in years
-      AGGREGATE: 'sum'
-      FILL_NA: '0'
-      SAVE: True
-      LOAD: False
-    MED_ORDERS:
-      USE: False
-      FILE_NAME: "med_orders.csv"
-      USE_COLS: ['Patient Id', 'Therapeutic Class', 'Sig', 'Start Date']
-      TYPE: 'Therapeutic Class'
-      BINS: 1
-      BIN_DURATION: 1
-      AGGREGATE: 'mean'
-      FILL_NA: '0'
-      SAVE: True
-      LOAD: False
-    MED_ADMIN:
-      USE: False
-      FILE_NAME: "med_admin.csv"
-      BINS: 1
-      BIN_DURATION: 1
-      AGGREGATE: 'sum'
-      SAVE: True
-      LOAD: False
-    RADIOLOGY_REPORT_META:
-      USE: False
-      FILE_NAME: "radiology_report_meta.csv"
-      BINS: 1
-      BIN_DURATION: 1
-      AGGREGATE: 'mean'
-      SAVE: True
-      LOAD: True
-    CLINICAL_NOTE_META:
-      USE: False
-      FILE_NAME: "clinical_note_meta.csv"
-      BINS: 1
-      BIN_DURATION: 1
-      AGGREGATE: 'sum'
-      SAVE: True
-      LOAD: True
-    ENCOUNTERS:
-      USE: False
-      FILE_NAME: "encounters.csv"
-      BINS: 1
-      BIN_DURATION: 1
-      AGGREGATE: 'mean'
-      SAVE: True
-      LOAD: True
+DATA_PATH: /bmrNAS/scandata/abct_ehr/clinical_data/
+SAVE_DIR: /dataNAS/people/lblankem/STARR-Labeler/starr_labeler/features/results
+NUM_PATIENTS: 23547
+PREDICTION_DATES: 'CT'
+DAYS_AFTER_PREDICTION_DATES: 14
+EHR_TYPES:
+  DEMOGRAPHICS:
+    USE: True
+    FILE_NAME: "demographics.csv"
+    USE_COLS: ['Patient Id', 'Gender', 'Race', 'Ethnicity', 'Date of Birth', 'Recent BMI']
+    REGEX_TO_FEATURE_NAME: {'Date of Birth': None, 'Recent BMI': None} # Date of Birth here gets converted to age.
+    TIME_BINS: 1
+    TIME_BIN_DURATION: 1 # in years
+    AGGREGATE_ACROSS_TIME: 'mean'
+    FILL_NA: 'median'
+    SAVE: True
+    LOAD: False # whether to load from
+  VITALS:
+    USE: False
+    FILE_NAME: "flowsheets.csv"
+    USE_COLS: ['Patient Id', 'Measure', 'Value', 'Date']
+    TYPE: 'Measure'
+    VALUE: 'Value'
+    REGEX_TO_FEATURE_NAME: {'DBP': None, 'SBP': None, 'BP': None, 'Pulse': None, 'Temp': None, ' Weight': None, 'SpO2': None, 'Resp': None, 'Mean Arterial Pressure \(Calculated\)': None, 'BSA \(Calculated - sq m\)': None, ' Height': None, ' Fall Within Last 6 Months': None}
+    TIME_BINS: 1
+    TIME_BIN_DURATION: 1
+    AGGREGATE_ACROSS_TIME: 'mean'
+    FILL_NA: 'median'
+    SAVE: True
+    LOAD: False
+  LABS:
+    USE: True
+    FILE_NAME: "labs.csv"
+    USE_COLS: ['Patient Id', 'Value', 'Taken Date', 'Result', 'Reference High', 'Reference Low', 'Units']
+    TYPE: 'Result'
+    Value: 'Value'
+    REGEX_TO_FEATURE_NAME: {'Platelet count': None, 'ALT \(SGPT\), Ser/Plas': None, 'AST \(SGOT\), Ser/Plas': None, 'Globulin': None}
+    TIME_BINS: 1
+    TIME_BIN_DURATION: 1
+    AGGREGATE_ACROSS_TIME: 'mean'
+    FILL_NA: 'median'
+    SAVE: True
+    LOAD: False
+  DIAGNOSES:
+    USE: True
+    FILE_NAME: "diagnoses.csv"
+    USE_COLS: ['Patient Id', 'Date', 'ICD10 Code']
+    TYPE: 'ICD10 Code'
+    NUM_ICD_CHARS: 3
+    REGEX_TO_FEATURE_NAME: {"E08": None, "E09": None, "E10": None, "E11": None, "E13": None}
+    TIME_BINS: 1
+    TIME_BIN_DURATION: 1
+    AGGREGATE_ACROSS_TIME: 'sum'
+    FILL_NA: '0'
+    SAVE: True
+    LOAD: False
+  PROCEDURES:
+    USE: False
+    FILE_NAME: "procedures.csv"
+    USE_COLS: ['Patient Id', 'Code Type', 'Code', 'Date']
+    TYPE: 'Code'
+    TIME_BINS: 1
+    TIME_BIN_DURATION: 1 # in years
+    AGGREGATE_ACROSS_TIME: 'sum'
+    FILL_NA: '0'
+    SAVE: True
+    LOAD: False
+  MED_ORDERS:
+    USE: False
+    FILE_NAME: "med_orders.csv"
+    USE_COLS: ['Patient Id', 'Therapeutic Class', 'Sig', 'Start Date']
+    TYPE: 'Therapeutic Class'
+    TIME_BINS: 1
+    TIME_BIN_DURATION: 1
+    AGGREGATE_ACROSS_TIME: 'mean'
+    FILL_NA: '0'
+    SAVE: True
+    LOAD: False
+  MED_ADMIN:
+    USE: False
+    FILE_NAME: "med_admin.csv"
+    TIME_BINS: 1
+    TIME_BIN_DURATION: 1
+    AGGREGATE_ACROSS_TIME: 'sum'
+    SAVE: True
+    LOAD: False
+  RADIOLOGY_REPORT_META:
+    USE: False
+    FILE_NAME: "radiology_report_meta.csv"
+    TIME_BINS: 1
+    TIME_BIN_DURATION: 1
+    AGGREGATE_ACROSS_TIME: 'mean'
+    SAVE: True
+    LOAD: True
+  CLINICAL_NOTE_META:
+    USE: False
+    FILE_NAME: "clinical_note_meta.csv"
+    TIME_BINS: 1
+    TIME_BIN_DURATION: 1
+    AGGREGATE_ACROSS_TIME: 'sum'
+    SAVE: True
+    LOAD: True
+  ENCOUNTERS:
+    USE: False
+    FILE_NAME: "encounters.csv"
+    TIME_BINS: 1
+    TIME_BIN_DURATION: 1
+    AGGREGATE_ACROSS_TIME: 'mean'
+    SAVE: True
+    LOAD: True
 
 

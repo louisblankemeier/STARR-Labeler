@@ -17,7 +17,7 @@ class extract_labs(extract_base):
 
     def process_data(self, pat_data):
         labs_regex = "|".join(
-            list(self.cfg["FEATURES"]["TYPES"]["LABS"]["INCLUDE"].keys())
+            list(self.cfg["EHR_TYPES"]["LABS"]["REGEX_TO_FEATURE_NAME"].keys())
         )
 
         if "Hemoglobin A1c" in labs_regex:
@@ -27,7 +27,7 @@ class extract_labs(extract_base):
             pat_data["Result"].str.fullmatch(labs_regex, case=False, na=False)
         ]
 
-        for key, value in self.cfg["FEATURES"]["TYPES"]["LABS"]["INCLUDE"].items():
+        for key, value in self.cfg["EHR_TYPES"]["LABS"]["REGEX_TO_FEATURE_NAME"].items():
             if value != "None":
                 pat_data.loc[
                     pat_data["Result"].str.fullmatch(key, case=False, na=False),
@@ -59,7 +59,7 @@ class extract_labs(extract_base):
 
     def truncate_data(self, pat_data):
         labs_regex = "|".join(
-            list(self.cfg["FEATURES"]["TYPES"]["LABS"]["INCLUDE"].keys())
+            list(self.cfg["EHR_TYPES"]["LABS"]["REGEX_TO_FEATURE_NAME"].keys())
         )
 
         if "Hemoglobin A1c" in labs_regex:
@@ -71,7 +71,7 @@ class extract_labs(extract_base):
             )
         ]
 
-        for key, value in self.cfg["FEATURES"]["TYPES"]["LABS"]["INCLUDE"].items():
+        for key, value in self.cfg["EHR_TYPES"]["LABS"]["REGEX_TO_FEATURE_NAME"].items():
             if value != "None":
                 pat_data.loc[
                     pat_data["Result"].str.contains(

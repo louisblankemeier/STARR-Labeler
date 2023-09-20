@@ -6,11 +6,11 @@ DISEASE_NAME: fragility_fracture
 DAYS_AFTER: 1825
 DAYS_BEFORE: 0
 CONSIDER_ONLY_FIRST_DIAGNOSIS: True
-PATH: /bmrNAS/scandata/abct_ehr/clinical_data/
+DATA_PATH: /bmrNAS/scandata/abct_ehr/clinical_data/
 NUM_PATIENTS: 23547
-DATES: 'CT'
+PREDICTION_DATES: 'CT'
 
-TYPES:
+EHR_TYPES:
   DIAGNOSES:
     FILE_NAME: "diagnoses.csv"
     USE_COLS: ['Patient Id', 'Date', 'ICD10 Code', 'ICD9 Code']

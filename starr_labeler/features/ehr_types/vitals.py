@@ -9,7 +9,7 @@ class extract_vitals(extract_base):
 
     def process_data(self, pat_data):
         vitals_regex = "|".join(
-            list(self.cfg["FEATURES"]["TYPES"]["VITALS"]["INCLUDE"].keys())
+            list(self.cfg["EHR_TYPES"]["VITALS"]["REGEX_TO_FEATURE_NAME"].keys())
         )
         pat_data = pat_data[
             pat_data["Measure"].str.fullmatch(vitals_regex, case=False, na=False)
@@ -24,7 +24,7 @@ class extract_vitals(extract_base):
 
     def truncate_data(self, pat_data):
         vitals_regex = "|".join(
-            list(self.cfg["FEATURES"]["TYPES"]["VITALS"]["INCLUDE"].keys())
+            list(self.cfg["EHR_TYPES"]["VITALS"]["REGEX_TO_FEATURE_NAME"].keys())
         )
         pat_data = pat_data[
             pat_data["Measure"].str.contains(

@@ -9,7 +9,7 @@ class extract_demographics(extract_base):
 
     def process_data(self, pat_data, first_call=False):
         demographics_regex = "|".join(
-            list(self.cfg["FEATURES"]["TYPES"]["DEMOGRAPHICS"]["INCLUDE"].keys())
+            list(self.cfg["EHR_TYPES"]["DEMOGRAPHICS"]["REGEX_TO_FEATURE_NAME"].keys())
         )
         demographics_regex += "|Patient Id"
         pat_data = pat_data.loc[
@@ -54,7 +54,7 @@ class extract_demographics(extract_base):
 
     def truncate_data(self, pat_data):
         demographics_regex = "|".join(
-            list(self.cfg["FEATURES"]["TYPES"]["DEMOGRAPHICS"]["INCLUDE"].keys())
+            list(self.cfg["EHR_TYPES"]["DEMOGRAPHICS"]["REGEX_TO_FEATURE_NAME"].keys())
         )
         demographics_regex += "|Patient Id"
         pat_data = pat_data.loc[
