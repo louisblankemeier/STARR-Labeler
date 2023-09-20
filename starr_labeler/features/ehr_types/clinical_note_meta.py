@@ -1,7 +1,7 @@
-from starr_labeler.features.extract_features import extract_base
+from starr_labeler.features.extract_features import ExtractBase
 
 
-class extract_clinical_note_meta(extract_base):
+class ExtractClinicalNoteMeta(ExtractBase):
     def __init__(self, config, file_name, feature_type):
         super().__init__(config, file_name, feature_type)
 

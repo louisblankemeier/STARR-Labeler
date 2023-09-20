@@ -5,7 +5,7 @@ import os
 
 import pandas as pd
 
-from starr_labeler.features.extract_features.extract import extract_base
+from starr_labeler.features.extract_features.extract import ExtractBase
 
 
 def read_csv_dict(file_name):
@@ -52,7 +52,7 @@ def map_alpha(procedures_alpha, file_path):
     return procedures_alpha
 
 
-class extract_procedures(extract_base):
+class ExtractProcedures(ExtractBase):
     def __init__(self, config, file_name, feature_type):
         super().__init__(config, file_name, feature_type)
 

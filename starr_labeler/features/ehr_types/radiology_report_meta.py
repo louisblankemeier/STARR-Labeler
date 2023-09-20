@@ -1,7 +1,7 @@
-from starr_labeler.features.extract_features.extract import extract_base
+from starr_labeler.features.extract_features.extract import ExtractBase
 
 
-class extract_radiology_report_meta(extract_base):
+class ExtractRadiologyReportMeta(ExtractBase):
     def __init__(self, config, file_name, feature_type):
         super().__init__(config, file_name, feature_type)
 

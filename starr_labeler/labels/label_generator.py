@@ -13,7 +13,7 @@ from starr_labeler.utils.utils import data_iterator, get_splits, patient_iterato
 pd.options.mode.chained_assignment = None
 
 
-class label_generator:
+class LabelGenerator:
     """Class for generating labels for the given disease.
     Attributes:
         cfg (Dict): Dictionary containing the configuration parameters.
@@ -43,17 +43,23 @@ class label_generator:
             output_folder (Path): Path to the output folder.
         """
         self.cfg: Dict = config
-        self.icd10_codes_regex: str = "|".join(self.cfg["TYPES"]["DIAGNOSES"]["ICD10"]["Codes"])
-        self.hierarchical_icd10: bool = self.cfg["TYPES"]["DIAGNOSES"]["ICD10"]["Hierarchical"]
+        self.icd10_codes_regex: str = "|".join(
+            self.cfg["EHR_TYPES"]["DIAGNOSES"]["ICD10"]["Codes"]
+        )
+        self.hierarchical_icd10: bool = self.cfg["EHR_TYPES"]["DIAGNOSES"]["ICD10"][
+            "Hierarchical"
+        ]
 
-        if "ICD9" in self.cfg["TYPES"]["DIAGNOSES"]:
-            icd9_list = self.cfg["TYPES"]["DIAGNOSES"]["ICD9"]["Codes"]
+        if "ICD9" in self.cfg["EHR_TYPES"]["DIAGNOSES"]:
+            icd9_list = self.cfg["EHR_TYPES"]["DIAGNOSES"]["ICD9"]["Codes"]
             icd9_list = [str(icd9) for icd9 in icd9_list]
             self.icd9_codes_regex: str = "|".join(icd9_list)
-            self.hierarchical_icd9: bool = self.cfg["TYPES"]["DIAGNOSES"]["ICD9"]["Hierarchical"]
+            self.hierarchical_icd9: bool = self.cfg["EHR_TYPES"]["DIAGNOSES"]["ICD9"][
+                "Hierarchical"
+            ]
 
-        self.output_folder: Path = Path(__file__).parent / "output_files" / self.cfg["DISEASE_NAME"]
-        self.features_path = self.cfg["PATH"]
+        self.output_folder: Path = Path(self.cfg["SAVE_DIR"]) / self.cfg["DISEASE_NAME"]
+        self.features_path = self.cfg["DATA_PATH"]
         self.disease_name = self.cfg["DISEASE_NAME"]
         self.days_before = self.cfg["DAYS_BEFORE"]
         self.days_after = self.cfg["DAYS_AFTER"]
@@ -63,8 +69,10 @@ class label_generator:
         if not os.path.exists(self.output_folder):
             os.makedirs(self.output_folder)
 
-        if os.path.exists(self.output_folder / "diagnosis_dates.csv"):
-            self.diagnosis_dates = pd.read_csv(self.output_folder / "diagnosis_dates.csv")
+        if os.path.exists(self.output_folder / "outcome_dates.csv"):
+            self.diagnosis_dates = pd.read_csv(
+                self.output_folder / "outcome_dates.csv"
+            )
 
     def positive_diagnoses(self, merged):
         """Find the positive diagnoses for the given disease.
@@ -77,7 +85,9 @@ class label_generator:
         """
 
         if self.hierarchical_icd10:
-            pos_icd10 = merged["ICD10 Code"].str.match(self.icd10_codes_regex, case=False, na=False)
+            pos_icd10 = merged["ICD10 Code"].str.match(
+                self.icd10_codes_regex, case=False, na=False
+            )
         else:
             pos_icd10 = merged["ICD10 Code"].str.fullmatch(
                 self.icd10_codes_regex, case=False, na=False
@@ -110,7 +120,9 @@ class label_generator:
         return merged
 
     def encounter_dates(self):
-        encounters_iterator = data_iterator(self.cfg["PATH"], "encounters.csv", None, 10000)
+        encounters_iterator = data_iterator(
+            self.cfg["DATA_PATH"], "encounters.csv", None, 10000
+        )
 
         encounters_dataframes = []
         for encounters in encounters_iterator:
@@ -121,18 +133,21 @@ class label_generator:
             encounters_df["Date"], format="%m/%d/%Y %H:%M", utc=True
         )
         encounters_df.loc[
-            encounters_df["Encounter_dt"].dt.date > datetime.date(2022, 2, 1), "Encounter_dt"
+            encounters_df["Encounter_dt"].dt.date > datetime.date(2022, 2, 1),
+            "Encounter_dt",
         ] = pd.NaT
         encounters_df = encounters_df[["Patient Id", "Encounter_dt"]]
-        first_encounters = encounters_df.groupby(["Patient Id"], sort=False, as_index=False).apply(
-            lambda x: x.sort_values(["Encounter_dt"], ascending=True).head(1)
-        )
+        first_encounters = encounters_df.groupby(
+            ["Patient Id"], sort=False, as_index=False
+        ).apply(lambda x: x.sort_values(["Encounter_dt"], ascending=True).head(1))
         first_encounters.columns = ["Patient Id", "First Encounter Date"]
-        last_encounters = encounters_df.groupby(["Patient Id"], sort=False, as_index=False).apply(
-            lambda x: x.sort_values(["Encounter_dt"], ascending=False).head(1)
-        )
+        last_encounters = encounters_df.groupby(
+            ["Patient Id"], sort=False, as_index=False
+        ).apply(lambda x: x.sort_values(["Encounter_dt"], ascending=False).head(1))
         last_encounters.columns = ["Patient Id", "Last Encounter Date"]
-        encounters_data = first_encounters.merge(last_encounters, how="inner", on=["Patient Id"])
+        encounters_data = first_encounters.merge(
+            last_encounters, how="inner", on=["Patient Id"]
+        )
         return encounters_data
 
     def compute_diagnosis_dates(self, splits=None, rows=1000000):
@@ -141,12 +156,14 @@ class label_generator:
             splits (int, optional): Number of splits to create. Defaults to None.
             rows (int, optional): Number of rows to read at a time. Defaults to 1000000.
         """
-        imaging_df = self.imaging_dates(self.cfg["DATES"])
+        imaging_df = self.imaging_dates(self.cfg["PREDICTION_DATES"])
         all_mrn_accession = imaging_df[
             ["Patient Id", "Accession Number", "Imaging_dt", "Filename", "Text"]
         ]
         encounters_data = self.encounter_dates()
-        mrn_accession = all_mrn_accession.merge(encounters_data, how="left", on=["Patient Id"])
+        mrn_accession = all_mrn_accession.merge(
+            encounters_data, how="left", on=["Patient Id"]
+        )
         mrn_accession = mrn_accession[
             [
                 "Patient Id",
@@ -159,16 +176,23 @@ class label_generator:
 
         types_array = []
 
-        file_dict = {key: self.cfg["TYPES"][key]["FILE_NAME"] for key in self.cfg["TYPES"].keys()}
+        file_dict = {
+            key: self.cfg["EHR_TYPES"][key]["FILE_NAME"]
+            for key in self.cfg["EHR_TYPES"].keys()
+        }
         for ehr_type in file_dict.keys():
             if hasattr(self, f"positive_{ehr_type.lower()}"):
-                pat_iter_class = patient_iterator(self.cfg["PATH"], file_dict[ehr_type], None)
+                pat_iter_class = patient_iterator(
+                    self.cfg["DATA_PATH"], file_dict[ehr_type], None
+                )
                 iterator = iter(pat_iter_class)
                 results = []
                 print(f"Looking through {ehr_type.lower()}...")
                 t = tqdm(total=self.cfg["NUM_PATIENTS"])
                 for pat_data in iterator:
-                    num_patients_processed = (pat_data.loc[:, "Patient Id"].value_counts()).shape[0]
+                    num_patients_processed = (
+                        pat_data.loc[:, "Patient Id"].value_counts()
+                    ).shape[0]
                     merged = pat_data.merge(imaging_df, how="left", on="Patient Id")
                     positive_function = getattr(self, f"positive_{ehr_type.lower()}")
                     processed = positive_function(merged)
@@ -177,11 +201,17 @@ class label_generator:
                     )
                     if self.consider_only_first_diagnosis:
                         processed = processed.groupby(
-                            ["Patient Id", "Accession Number"], sort=False, as_index=False
-                        ).apply(lambda x: x.sort_values(["Date"], ascending=True).head(1))
+                            ["Patient Id", "Accession Number"],
+                            sort=False,
+                            as_index=False,
+                        ).apply(
+                            lambda x: x.sort_values(["Date"], ascending=True).head(1)
+                        )
                     else:
                         processed = processed.groupby(
-                            ["Patient Id", "Accession Number"], sort=False, as_index=False
+                            ["Patient Id", "Accession Number"],
+                            sort=False,
+                            as_index=False,
                         ).apply(lambda x: x.sort_values(["Date"], ascending=True))
                     results.append(processed)
                     t.update(num_patients_processed)
@@ -218,9 +248,9 @@ class label_generator:
         results = results.rename(columns={"Imaging_dt": "Imaging Date"})
         print(
             "Saving imaging dates, first encounter dates,"
-            " last encounter dates, and diagnosis dates in diagnosis_dates.csv..."
+            " last encounter dates, and diagnosis dates in outcome_dates.csv..."
         )
-        results.to_csv(self.output_folder / "diagnosis_dates.csv", index=False)
+        results.to_csv(self.output_folder / "outcome_dates.csv", index=False)
         self.diagnosis_dates = results
         print("Done!")
         print("")
@@ -242,7 +272,9 @@ class label_generator:
         days_before = self.days_before
         days_after = self.days_after
 
-        self.diagnosis_dates["Imaging Date"] = pd.to_datetime(self.diagnosis_dates["Imaging Date"])
+        self.diagnosis_dates["Imaging Date"] = pd.to_datetime(
+            self.diagnosis_dates["Imaging Date"]
+        )
         self.diagnosis_dates["Diagnosis Date"] = pd.to_datetime(
             self.diagnosis_dates["Diagnosis Date"]
         )
@@ -256,18 +288,22 @@ class label_generator:
         existent_diagnosis_date = ~self.diagnosis_dates["Diagnosis Date"].isna()
         nonexistent_diagnosis_date = self.diagnosis_dates["Diagnosis Date"].isna()
         days_diagnosis_after_imaging = (
-            self.diagnosis_dates["Diagnosis Date"] - self.diagnosis_dates["Imaging Date"]
+            self.diagnosis_dates["Diagnosis Date"]
+            - self.diagnosis_dates["Imaging Date"]
         ).dt.days
         days_last_encounter_after_imaging = (
-            self.diagnosis_dates["Last Encounter Date"] - self.diagnosis_dates["Imaging Date"]
+            self.diagnosis_dates["Last Encounter Date"]
+            - self.diagnosis_dates["Imaging Date"]
         ).dt.days
         diagnosis_date_before_imaging = (
-            self.diagnosis_dates["Imaging Date"] - self.diagnosis_dates["Diagnosis Date"]
+            self.diagnosis_dates["Imaging Date"]
+            - self.diagnosis_dates["Diagnosis Date"]
         ).dt.days > days_before
 
-        zeros = (nonexistent_diagnosis_date & (days_last_encounter_after_imaging > days_after)) | (
-            days_diagnosis_after_imaging > days_after
-        )
+        zeros = (
+            nonexistent_diagnosis_date
+            & (days_last_encounter_after_imaging > days_after)
+        ) | (days_diagnosis_after_imaging > days_after)
         ones = (
             existent_diagnosis_date
             & (days_diagnosis_after_imaging < days_after)
@@ -282,7 +318,9 @@ class label_generator:
         self.diagnosis_dates.loc[threes, "Label"] = 3
         self.diagnosis_dates["Label"] = self.diagnosis_dates["Label"].astype(int)
 
-        self.diagnosis_dates = self.diagnosis_dates[["Patient Id", "Accession Number", "Label"]]
+        self.diagnosis_dates = self.diagnosis_dates[
+            ["Patient Id", "Accession Number", "Label"]
+        ]
 
         splits = None
         if splits is not None:
@@ -290,10 +328,11 @@ class label_generator:
 
         print(
             f"Saving labels for {round(self.days_after / 30.5)} months"
-            f" of followup in diagnosis_labels_{round(self.days_after / 30.5)}_months.csv..."
+            f" of followup in outcome_labels_{round(self.days_after / 30.5)}_months.csv..."
         )
         self.diagnosis_dates.to_csv(
-            self.output_folder / f"diagnosis_labels_{round(self.days_after / 30.5)}_months.csv",
+            self.output_folder
+            / f"outcome_labels_{round(self.days_after / 30.5)}_months.csv",
             index=False,
         )
         print("Done!")
@@ -397,14 +436,23 @@ class label_generator:
         imaging_df = imaging_df.groupby(["Patient Id", "Accession Number"]).head(1)
         cross_walk_data = pd.DataFrame(
             pd.read_csv(
-                os.path.join(str(Path(self.cfg["PATH"]).parent), "priority_crosswalk_all.csv")
+                os.path.join(
+                    str(Path(self.cfg["DATA_PATH"]).parent),
+                    "priority_crosswalk_all.csv",
+                )
             )
         )
         cross_walk_data = cross_walk_data[["accession", "filename"]]
         cross_walk_data.columns = ["Accession Number", "Filename"]
-        cross_walk_data["Accession Number"] = cross_walk_data["Accession Number"].astype(str)
+        cross_walk_data["Accession Number"] = cross_walk_data[
+            "Accession Number"
+        ].astype(str)
         cross_walk_data["Filename"] = cross_walk_data["Filename"].astype(str)
-        imaging_df = cross_walk_data.merge(imaging_df, how="inner", on=["Accession Number"])
+        imaging_df = cross_walk_data.merge(
+            imaging_df, how="inner", on=["Accession Number"]
+        )
 
-        imaging_df = imaging_df.merge(radiology_report_df, how="inner", on=["Accession Number"])
+        imaging_df = imaging_df.merge(
+            radiology_report_df, how="inner", on=["Accession Number"]
+        )
         return imaging_df

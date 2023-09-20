@@ -9,7 +9,7 @@ from starr_labeler.utils.utils import data_iterator, patient_iterator
 pd.options.mode.chained_assignment = None
 
 
-class extract_base:
+class ExtractBase:
     def __init__(self, config, file_name, feature_type):
         self.cfg = config
         self.file = file_name
@@ -24,7 +24,9 @@ class extract_base:
         self.lag_after_dates = self.features["DAYS_AFTER_PREDICTION_DATES"]
         self.dates = self.features["PREDICTION_DATES"]
         self.num_patients = self.features["NUM_PATIENTS"]
-        self.aggregate = self.features["EHR_TYPES"][self.feature_type.upper()]["AGGREGATE_ACROSS_TIME"]
+        self.aggregate = self.features["EHR_TYPES"][self.feature_type.upper()][
+            "AGGREGATE_ACROSS_TIME"
+        ]
         if "USE_COLS" in self.features["EHR_TYPES"][self.feature_type.upper()]:
             self.use_cols = self.features["EHR_TYPES"][self.feature_type.upper()][
                 "USE_COLS"

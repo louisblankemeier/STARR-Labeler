@@ -30,9 +30,16 @@ def process_all_types(cfg):
                     f"starr_labeler.features.ehr_types.{feature_type.lower()}",
                     fromlist=[f"{feature_type.lower()}"],
                 )
-                extract_class = getattr(module, f"extract_{feature_type.lower()}")
+                # split feature type by _ and capitalize each word and then join them
+                # back together
+                feature_type_camel = "".join(
+                    [word.capitalize() for word in feature_type.split("_")]
+                )
+                extract_class = getattr(module, f"Extract{feature_type_camel}")
                 extract_instance = extract_class(
-                    cfg, cfg_section["EHR_TYPES"][feature_type]["FILE_NAME"], feature_type
+                    cfg,
+                    cfg_section["EHR_TYPES"][feature_type]["FILE_NAME"],
+                    feature_type,
                 )
                 extracted_features = extract_instance.process_type(
                     fillna=cfg_section["EHR_TYPES"][feature_type]["FILL_NA"]
@@ -51,9 +58,8 @@ def process_all_types(cfg):
         regex.sub("_", col) if any(x in str(col) for x in {"[", "]", "<"}) else col
         for col in input_features.columns
     ]
-    input_features.to_csv(
-        os.path.join(cfg["SAVE_DIR"], "features.csv"), index=False
-    )
+    input_features.to_csv(os.path.join(cfg["SAVE_DIR"], "features.csv"), index=False)
+    print("Done!")
     return input_features
 
 

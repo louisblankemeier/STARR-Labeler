@@ -1,9 +1,9 @@
 import pandas as pd
 
-from starr_labeler.features.extract_features.extract import extract_base
+from starr_labeler.features.extract_features.extract import ExtractBase
 
 
-class extract_diagnoses(extract_base):
+class ExtractDiagnoses(ExtractBase):
     def __init__(self, config, file_name, feature_type):
         super().__init__(config, file_name, feature_type)
 

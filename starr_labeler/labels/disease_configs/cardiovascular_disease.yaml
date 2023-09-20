@@ -7,6 +7,7 @@ DAYS_AFTER: 1825
 DAYS_BEFORE: 0
 CONSIDER_ONLY_FIRST_DIAGNOSIS: True
 DATA_PATH: /bmrNAS/scandata/abct_ehr/clinical_data/
+SAVE_DIR: /dataNAS/people/lblankem/starr_labeler_testing/STARR-Labeler/starr_labeler/results
 NUM_PATIENTS: 23547
 PREDICTION_DATES: 'CT'
 
