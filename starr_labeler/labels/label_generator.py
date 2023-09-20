@@ -447,9 +447,7 @@ class LabelGenerator:
             "Accession Number"
         ].astype(str)
         cross_walk_data["Filename"] = cross_walk_data["Filename"].astype(str)
-        imaging_df = cross_walk_data.merge(
-            imaging_df, how="inner", on=["Accession Number"]
-        )
+        imaging_df = cross_walk_data.merge(imaging_df, how="inner", on=["Accession Number"])
 
         imaging_df = imaging_df.merge(
             radiology_report_df, how="inner", on=["Accession Number"]
