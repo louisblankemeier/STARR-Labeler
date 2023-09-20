@@ -1,4 +1,3 @@
-
 from starr_labeler.labels.extract_labels import *
 
 global code
