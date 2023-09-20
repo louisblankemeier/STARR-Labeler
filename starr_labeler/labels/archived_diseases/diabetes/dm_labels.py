@@ -1,8 +1,3 @@
-import os
-import sys
-from glob import glob
-from pathlib import Path
-
 from starr_labeler.labels.extract_labels import *
 
 
@@ -11,7 +6,9 @@ class dm_labels(labels_base):
         super().__init__(config, save_name)
 
     def positive_diagnoses(self, merged):
-        merged = merged.loc[(merged["ICD10 Code"] >= "E08") & (merged["ICD10 Code"] < "E14")]
+        merged = merged.loc[
+            (merged["ICD10 Code"] >= "E08") & (merged["ICD10 Code"] < "E14")
+        ]
         merged = merged[["Patient Id", "Accession Number", "Date", "Imaging_dt"]]
         return merged
 

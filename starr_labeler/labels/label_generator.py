@@ -5,10 +5,11 @@ from typing import Dict
 
 import numpy as np
 import pandas as pd
-from tqdm import tqdm
 from tabulate import tabulate
+from tqdm import tqdm
 
-from starr_labeler.utils.utils import data_iterator, get_splits, patient_iterator
+from starr_labeler.utils.utils import (data_iterator, get_splits,
+                                       patient_iterator)
 
 pd.options.mode.chained_assignment = None
 
@@ -70,9 +71,7 @@ class LabelGenerator:
             os.makedirs(self.output_folder)
 
         if os.path.exists(self.output_folder / "outcome_dates.csv"):
-            self.diagnosis_dates = pd.read_csv(
-                self.output_folder / "outcome_dates.csv"
-            )
+            self.diagnosis_dates = pd.read_csv(self.output_folder / "outcome_dates.csv")
 
     def positive_diagnoses(self, merged):
         """Find the positive diagnoses for the given disease.
