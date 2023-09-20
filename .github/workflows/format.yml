@@ -1,8 +1,10 @@
 name: Format code
 
 on:
-  push:
-    branches: [ main ]
+    push:
+      branches: [ '*' ]
+    pull_request:
+      branches: [ '*' ]
 
 jobs:
   format:
