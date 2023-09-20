@@ -17,7 +17,9 @@ class ExtractDiagnoses(ExtractBase):
                 list(self.cfg["EHR_TYPES"]["DIAGNOSES"]["REGEX_TO_FEATURE_NAME"].keys())
             )
             pat_data = pat_data.loc[
-                pat_data[diagnoses_type].str.match(diagnoses_regex, case=False, na=False)
+                pat_data[diagnoses_type].str.match(
+                    diagnoses_regex, case=False, na=False
+                )
             ]
 
         pat_data = pat_data.loc[~pd.isna(pat_data.loc[:, diagnoses_type])]
@@ -31,7 +33,9 @@ class ExtractDiagnoses(ExtractBase):
         if not pat_data.empty:
             pat_data.loc[:, "Value"] = 1
         else:
-            pat_data = pd.DataFrame(columns=["Patient Id", diagnoses_type, "Date", "Value"])
+            pat_data = pd.DataFrame(
+                columns=["Patient Id", diagnoses_type, "Date", "Value"]
+            )
         pat_data = pat_data[["Patient Id", diagnoses_type, "Value", "Date"]]
         pat_data.columns = ["Patient Id", "Type", "Value", "Event_dt"]
         return pat_data
