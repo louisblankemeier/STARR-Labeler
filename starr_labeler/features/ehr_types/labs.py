@@ -27,7 +27,9 @@ class ExtractLabs(ExtractBase):
             pat_data["Result"].str.fullmatch(labs_regex, case=False, na=False)
         ]
 
-        for key, value in self.cfg["EHR_TYPES"]["LABS"]["REGEX_TO_FEATURE_NAME"].items():
+        for key, value in self.cfg["EHR_TYPES"]["LABS"][
+            "REGEX_TO_FEATURE_NAME"
+        ].items():
             if value != "None":
                 pat_data.loc[
                     pat_data["Result"].str.fullmatch(key, case=False, na=False),
@@ -71,7 +73,9 @@ class ExtractLabs(ExtractBase):
             )
         ]
 
-        for key, value in self.cfg["EHR_TYPES"]["LABS"]["REGEX_TO_FEATURE_NAME"].items():
+        for key, value in self.cfg["EHR_TYPES"]["LABS"][
+            "REGEX_TO_FEATURE_NAME"
+        ].items():
             if value != "None":
                 pat_data.loc[
                     pat_data["Result"].str.contains(

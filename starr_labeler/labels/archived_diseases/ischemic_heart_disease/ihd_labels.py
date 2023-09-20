@@ -1,10 +1,3 @@
-import os
-import sys
-from glob import glob
-from pathlib import Path
-
-import hydra
-
 from starr_labeler.labels.extract_labels import *
 
 
@@ -13,6 +6,8 @@ class ihd_labels(labels_base):
         super().__init__(config, save_name)
 
     def positive_diagnoses(self, merged):
-        merged = merged.loc[(merged["ICD10 Code"] >= "I20") & (merged["ICD10 Code"] < "I26")]
+        merged = merged.loc[
+            (merged["ICD10 Code"] >= "I20") & (merged["ICD10 Code"] < "I26")
+        ]
         merged = merged[["Patient Id", "Accession Number", "Date", "Imaging_dt"]]
         return merged
