@@ -61,11 +61,11 @@ EHR_TYPES:
 
 - With ```USE_COLS```, load only specified columns of the csv for improved speed.
 
-- Time resolution (in years) can be increased by getting multiple entries from one subject according to the specified ```TIME_BINS```. If the value is 1, there will be 1 feature vector extracted for the time window specified above. A larger number of bins corresponds to multiple feature vectors extracted during that time window according to the number of bins and the specified bin duration. The number of bins is also shown in the variable name with '_1' for bin 1, '_2' for bin 2 etc.
+- Time resolution (in years) can be increased by getting multiple entries from one subject according to the specified ```TIME_BINS```. If the value is 1, there will be 1 feature vector extracted for the time window specified above. A larger number of bins corresponds to multiple feature vectors extracted from multiple time windows according to the number of bins and the specified bin duration. The number of bins is also shown in the variable name of the output CSV with '_1' for bin 1, '_2' for bin 2 etc.
 
 - If multiple entries are present for one subject specify aggregation strategy with ```AGGREGATE_ACROSS_TIME```.
 
-- If the ```REGEX_TO_FEATURE_NAME``` starts with ```^``` this defines a regex and in the example shown above all variables with names starting from ```HDL Cholesterol``` will be matched.
+- The keys in ```REGEX_TO_FEATURE_NAME``` define regex expressions and all values that match the regex are mapped to a single feature with a name given by the value in the dictionary. In the example shown above all variables with names starting from ```HDL Cholesterol``` will be matched.
     
 
 ## Generating Outcome Labels
@@ -115,10 +115,10 @@ EHR_TYPES:
         - 441.4
 ```
 
-- ```DAYS_AFTER``` defines the time window that the diagnosis first changed from Control to the specified disease *after* the CT Scan was taken.
-- ```DAYS_BEFORE``` defines the time window that the diagnosis first changed from Control to the specified disease *before* the CT Scan was taken.
+- ```DAYS_AFTER``` defines the end of the time window in days *after* the CT Scan during which evidence of the disease results in a positive label.
+- ```DAYS_BEFORE``` defines the start of the time window in days *before* the CT Scan during which evidence of the disease results in a positive label.
 - Class definition:
-  - Class 0 &rarr; Patient not diagnosed with the specified disease before or after the CT Scan withing the requested time window.
+  - Class 0 &rarr; Patient not diagnosed with the specified disease before or after the CT Scan withing the requested time window or any time in the patient's history.
   - Class 1 &rarr; Patient diagnosed with specified disease during the time window between days before and after.
   - Class 2 &rarr; Patient diagnosed with specified disease earlier than the 'days before' window.
   - Class 3 &rarr; Patient diagnoses with specified disease later than the 'days after' window.
