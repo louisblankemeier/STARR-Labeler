@@ -1,0 +1,46 @@
+defaults:
+  - _self_
+  - base_config
+
+DISEASE_NAME: afib
+DAYS_AFTER: 1825
+DAYS_BEFORE: 0
+CONSIDER_ONLY_FIRST_DIAGNOSIS: True
+DATA_PATH: /bmrNAS/scandata/abct_ehr/clinical_data/
+SAVE_DIR: /dataNAS/people/lblankem/starr_labeler_testing/STARR-Labeler/starr_labeler/results
+NUM_PATIENTS: 23547
+PREDICTION_DATES: 'CT'
+
+EHR_TYPES:
+  DIAGNOSES:
+    FILE_NAME: "diagnoses.csv"
+    USE_COLS: ['Patient Id', 'Date', 'ICD10 Code', 'ICD9 Code']
+    ICD10:
+      Hierarchical: True
+      Codes:
+        - I48
+    ICD9:
+      Hierarchical: True
+      Codes:
+        - 427.31
+        - 427.32
+  VITALS: 
+    FILE_NAME: "flowsheets.csv"
+    USE_COLS: ['Patient Id', 'Measure', 'Value', 'Date']
+  LABS: 
+    FILE_NAME: "labs.csv"
+    USE_COLS: ['Patient Id', 'Value', 'Taken Date', 'Result', 'Reference High', 'Reference Low', 'Units']
+  PROCEDURES:
+    FILE_NAME: "procedures.csv"
+    USE_COLS: ['Patient Id', 'Code Type', 'Code', 'Date']
+  MED_ORDERS:
+    FILE_NAME: "med_orders.csv"
+    USE_COLS: ['Patient Id', 'Therapeutic Class', 'Sig', 'Start Date']
+  MED_ADMIN:
+    FILE_NAME: "med_admin.csv"
+  RADIOLOGY_REPORT_META:
+    FILE_NAME: "radiology_report_meta.csv"
+  CLINICAL_NOTE_META:
+    FILE_NAME: "clinical_note_meta.csv"
+  ENCOUNTERS:
+    FILE_NAME: "encounters.csv"
