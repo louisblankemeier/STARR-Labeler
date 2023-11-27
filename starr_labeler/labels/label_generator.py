@@ -73,6 +73,8 @@ class LabelGenerator:
         if os.path.exists(self.output_folder / "outcome_dates.csv"):
             self.diagnosis_dates = pd.read_csv(self.output_folder / "outcome_dates.csv")
 
+        print(f"Generating labels for {self.disease_name}:")
+
     def positive_diagnoses(self, merged):
         """Find the positive diagnoses for the given disease.
         Args:
