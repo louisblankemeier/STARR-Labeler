@@ -22,7 +22,14 @@ EHR_TYPES:
         - E09.22
         - E10.22
         - E11.22
-        - E13.2
+        - E13.22
+        - I12
+        - I13
+        - N18
+    ICD9:
+      Hierarchical: True
+      Codes:
+        - 585
   VITALS: 
     FILE_NAME: "flowsheets.csv"
     USE_COLS: ['Patient Id', 'Measure', 'Value', 'Date']

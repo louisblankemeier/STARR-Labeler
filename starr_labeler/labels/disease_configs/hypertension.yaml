@@ -25,6 +25,15 @@ EHR_TYPES:
         - I14
         - I15
         - I16
+        - I1A
+    ICD9:
+      Hierarchical: True
+      Codes:
+        - 401
+        - 402
+        - 403
+        - 404
+        - 405
   VITALS: 
     FILE_NAME: "flowsheets.csv"
     USE_COLS: ['Patient Id', 'Measure', 'Value', 'Date']

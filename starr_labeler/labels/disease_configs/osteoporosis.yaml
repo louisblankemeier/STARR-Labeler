@@ -18,15 +18,11 @@ EHR_TYPES:
     ICD10:
       Hierarchical: True
       Codes:
+        - M80
         - M81
-        - Z87.310
-        - M89.7
-        - S12
-        - S22
-        - S32
-        - S42
-        - S52
-        - S72
+    ICD9:
+      Hierarchical: True
+        - 733.0
   VITALS: 
     FILE_NAME: "flowsheets.csv"
     USE_COLS: ['Patient Id', 'Measure', 'Value', 'Date']

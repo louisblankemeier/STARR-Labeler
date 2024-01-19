@@ -18,11 +18,9 @@ EHR_TYPES:
     ICD10:
       Hierarchical: True
       Codes:
-        - E08
-        - E09
-        - E10
         - E11
-        - E13
+      Codes:
+        - 249
   VITALS: 
     FILE_NAME: "flowsheets.csv"
     USE_COLS: ['Patient Id', 'Measure', 'Value', 'Date']
