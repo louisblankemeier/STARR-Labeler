@@ -19,6 +19,8 @@ EHR_TYPES:
       Hierarchical: True
       Codes:
         - E11
+    ICD9:
+      Hierarchical: True
       Codes:
         - 249
   VITALS: 
