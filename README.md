@@ -124,14 +124,14 @@ EHR_TYPES:
   - $t_s$ : time point marking the date of the scan.
   - $t_a$ : time point marking the ```DAYS AFTER``` a scan (e.g., window)
   - $t_h$ : time point marking the last date of record in a patient's history.
-> Note that $t_a$ - $t_s$, which is the window in which we're identifying events specified for our experimental design, may be longer than $t_h$ - $t_0$, which is the time period a patient has data in the EHR for. This is crucial!
+> Note that $t_a$ - $t_s$, which is the window in which we're identifying events specified for our experimental design, maybe longer than $t_h$ - $t_0$, which is the time period a patient has data in the EHR for. This is crucial!
 #### Output Label Interpretation
 - **Class 0** &rarr; Patient not diagnosed with the specified disease before or after the CT Scan within the requested time window or any time in the patient's history.
-  - IF a patient develops disease, then $t_d > t_a$.
+  - IF a patient develops a disease, then $t_d > t_a$.
 - **Class 1** &rarr; Patient diagnosed with specified disease during the time window between days before and days after.
-- Commontly, only patients from Class 0 and 1 are included in the studies as controls/positive classes.
+- Commonly, only patients from Class 0 and 1 are included in the studies as controls/positive classes.
   - $t_b ≤ t_d ≤ t_a$
-- **Class 2** &rarr; Patient diagnosed with specified disease earlier than the 'days before' window (e.g. patient is already "diseased" entering the cohort).
+- **Class 2** &rarr; Patient diagnosed with the specified disease earlier than the 'days before' window (e.g. patient is already "diseased" entering the cohort).
   - $t_d < t_b$
 - **Class 3** &rarr; Patient has not been monitored long enough to definitively rule-out disease.
   - $t_h < t_a$
